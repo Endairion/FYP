@@ -14,14 +14,32 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">*{
+	border: none;
+	background-color:transparent;
+	background:none;
+	padding:0;
+	margin:0;
+	color: #000;
+}
+
+#centralwidget{
+	background-color:#ffffff;
+}
+
+#leftMenuSubContainer{
+	background-color:#ffffff;
+}</string>
+   </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QWidget" name="leftMenuContainer" native="true">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QWidget" name="leftSubMenuContainer" native="true">
+        <widget class="QWidget" name="leftMenuSubContainer" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item alignment="Qt::AlignTop">
+          <item alignment="Qt::AlignLeft|Qt::AlignTop">
            <widget class="QFrame" name="frame">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -30,14 +48,14 @@
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
+             <item alignment="Qt::AlignLeft">
               <widget class="QPushButton" name="menuBtn">
                <property name="text">
                 <string/>
                </property>
                <property name="icon">
                 <iconset resource="resources.qrc">
-                 <normaloff>:/icons/icons/align-justify.svg</normaloff>:/icons/icons/align-justify.svg</iconset>
+                 <normaloff>:/icons/icons/menu.svg</normaloff>:/icons/icons/menu.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -50,7 +68,7 @@
             </layout>
            </widget>
           </item>
-          <item>
+          <item alignment="Qt::AlignLeft">
            <widget class="QFrame" name="frame_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -65,31 +83,64 @@
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
-             <item>
+             <item alignment="Qt::AlignLeft">
               <widget class="QPushButton" name="pushButton_2">
+               <property name="toolTip">
+                <string>Home</string>
+               </property>
                <property name="text">
-                <string>PushButton</string>
+                <string>Home</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/home.svg</normaloff>:/icons/icons/home.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
-             <item>
+             <item alignment="Qt::AlignLeft">
               <widget class="QPushButton" name="pushButton_3">
                <property name="text">
-                <string>PushButton</string>
+                <string>Uploads</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/upload.svg</normaloff>:/icons/icons/upload.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
-             <item>
+             <item alignment="Qt::AlignLeft">
               <widget class="QPushButton" name="pushButton_4">
                <property name="text">
-                <string>PushButton</string>
+                <string>History</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/file-text.svg</normaloff>:/icons/icons/file-text.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
-          <item>
+          <item alignment="Qt::AlignLeft|Qt::AlignBottom">
            <widget class="QFrame" name="frame_3">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -98,24 +149,54 @@
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
-             <item>
+             <item alignment="Qt::AlignLeft">
               <widget class="QPushButton" name="pushButton_5">
                <property name="text">
-                <string>PushButton</string>
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/settings.svg</normaloff>:/icons/icons/settings.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_6">
                <property name="text">
-                <string>PushButton</string>
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/info.svg</normaloff>:/icons/icons/info.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_7">
                <property name="text">
-                <string>PushButton</string>
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/help-circle.svg</normaloff>:/icons/icons/help-circle.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
