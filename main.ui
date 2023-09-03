@@ -24,16 +24,23 @@
 }
 
 #centralwidget{
-	background-color:#1f232a;
+	background-color:#F5F5F5;
 }
 
 #leftMenuSubContainer{
-	background-color:#16191d;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #fc00ff, stop:1 #3494E6);
 }
 
-QPushButton{
+#leftMenuSubContainer QPushButton{
 	text-align:left;
-	padding:2px 5px;
+	padding:5px 10px;
+	border-top-left-radius:10px;
+	border-bottom-left-radius:10px;
+    background-color: transparent;
+    color: #fff; /* Text color for the button */
+	font-weight: bold;
+	font-family:'Comic Sans MS';
+	font-size: 12px;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -41,8 +48,28 @@ QPushButton{
     <string notr="true"/>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>100</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item alignment="Qt::AlignLeft">
      <widget class="QWidget" name="leftMenuContainer" native="true">
+      <property name="styleSheet">
+       <string notr="true">#leftMenuContainer {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #fc00ff, stop:1 #00dbde);
+}</string>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
         <number>0</number>
@@ -62,7 +89,22 @@ QPushButton{
        <item alignment="Qt::AlignLeft">
         <widget class="QWidget" name="leftMenuSubContainer" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item alignment="Qt::AlignTop">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>10</number>
+          </property>
+          <item>
            <widget class="QFrame" name="frame">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -71,7 +113,22 @@ QPushButton{
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item alignment="Qt::AlignLeft">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
               <widget class="QPushButton" name="menuBtn">
                <property name="text">
                 <string/>
@@ -91,10 +148,10 @@ QPushButton{
             </layout>
            </widget>
           </item>
-          <item alignment="Qt::AlignTop">
+          <item>
            <widget class="QFrame" name="frame_2">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -106,10 +163,34 @@ QPushButton{
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
-             <item alignment="Qt::AlignLeft">
-              <widget class="QPushButton" name="pushButton_2">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="homeBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="toolTip">
                 <string>Home</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color:rgba(255, 255, 255, 0.35);</string>
                </property>
                <property name="text">
                 <string>Home</string>
@@ -124,10 +205,25 @@ QPushButton{
                  <height>24</height>
                 </size>
                </property>
+               <property name="default">
+                <bool>false</bool>
+               </property>
+               <property name="flat">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
-             <item alignment="Qt::AlignLeft">
-              <widget class="QPushButton" name="pushButton_3">
+             <item>
+              <widget class="QPushButton" name="uploadsBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
                <property name="text">
                 <string>Uploads</string>
                </property>
@@ -143,8 +239,8 @@ QPushButton{
                </property>
               </widget>
              </item>
-             <item alignment="Qt::AlignLeft">
-              <widget class="QPushButton" name="pushButton_4">
+             <item>
+              <widget class="QPushButton" name="historyBtn">
                <property name="text">
                 <string>History</string>
                </property>
@@ -176,7 +272,7 @@ QPushButton{
             </property>
            </spacer>
           </item>
-          <item alignment="Qt::AlignBottom">
+          <item>
            <widget class="QFrame" name="frame_3">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -185,8 +281,23 @@ QPushButton{
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
              <item alignment="Qt::AlignLeft">
-              <widget class="QPushButton" name="pushButton_5">
+              <widget class="QPushButton" name="settingsBtn">
                <property name="text">
                 <string>Settings</string>
                </property>
@@ -203,7 +314,7 @@ QPushButton{
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_6">
+              <widget class="QPushButton" name="infoBtn">
                <property name="text">
                 <string>Information</string>
                </property>
@@ -220,7 +331,7 @@ QPushButton{
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_7">
+              <widget class="QPushButton" name="helpBtn">
                <property name="text">
                 <string>Help</string>
                </property>
@@ -246,7 +357,39 @@ QPushButton{
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="mainBodyContainer" native="true"/>
+     <widget class="QWidget" name="centerMenuContainer" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QFrame" name="frame_4">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="mainBodyContainer" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
