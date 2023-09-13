@@ -1,20 +1,15 @@
 # metadata.py
+import time
 
 class FileMetadata:
-    def __init__(self, file_id, fragment_id, fragment_size, fragment_hash, timestamp, sender_info):
+    def __init__(self, file_id, fragments):
         self.file_id = file_id
-        self.fragment_id = fragment_id
-        self.fragment_size = fragment_size
-        self.fragment_hash = fragment_hash
-        self.timestamp = timestamp
-        self.sender_info = sender_info
+        self.fragments = fragments
+        self.timestamp = time.time()  # A timestamp for when the metadata was created
 
     def to_dict(self):
         return {
             'file_id': self.file_id,
-            'fragment_id': self.fragment_id,
-            'fragment_size': self.fragment_size,
-            'fragment_hash': self.fragment_hash,
-            'timestamp': self.timestamp,
-            'sender_info': self.sender_info
+            'fragments': [fragment.to_dict() for fragment in self.fragments],
+            'timestamp': self.timestamp
         }

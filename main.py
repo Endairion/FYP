@@ -1,3 +1,5 @@
+# main.py
+
 # Import necessary modules
 from blockchain import Blockchain  # Assuming Blockchain class is defined in 'blockchain.py' file
 from block import Block  # Assuming Block class is defined in 'block.py' file
@@ -13,7 +15,7 @@ if __name__ == "__main__":
     blockchain.addBlock(genesis_block)
 
     # Create metadata entries for fragmented files
-    file_id = "unique_file_identifier"
+    file_id = "unique_file_identifier"  # Same for all fragments of the same file
     fragments = [
         Fragment("fragment_id_1", 1024, "hash1", "sender1"),
         Fragment("fragment_id_2", 2048, "hash2", "sender2"),
