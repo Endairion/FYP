@@ -1,5 +1,6 @@
 # metadata.py
 import time
+from fragment import Fragment  # Import the Fragment class from fragment.py
 
 class FileMetadata:
     def __init__(self, file_id, fragments):
