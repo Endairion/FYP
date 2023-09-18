@@ -1,5 +1,7 @@
-from block import Block
+import pickle
+import os  # Import the 'os' module to check if a file exists
 import time
+from block import Block
 
 class Blockchain:
     def __init__(self):
@@ -47,6 +49,20 @@ class Blockchain:
             if currentBlock.lastHash != lastBlock.hash:
                 return False
         return True
+
+    def save_to_file(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.chain, file)
+
+    @classmethod
+    def load_from_file(cls, filename):
+        try:
+            with open(filename, 'rb') as file:
+                blockchain = cls()
+                blockchain.chain = pickle.load(file)
+                return blockchain
+        except (FileNotFoundError, EOFError):
+            return None
     
     def __str__(self):
         chain_info = "\n".join(str(block) for block in self.chain)
