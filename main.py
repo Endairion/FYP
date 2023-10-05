@@ -4,14 +4,20 @@ from blockchain import Blockchain  # Assuming Blockchain class is defined in 'bl
 from block import Block  # Assuming Block class is defined in 'block.py' file
 from metadata import FileMetadata  # Import the FileMetadata class from 'metadata.py'
 from fragment import Fragment  # Import the Fragment class from 'fragment.py'
+from userdata import UserData  # Import the UserData class from 'userdata.py'
 import time
 
 if __name__ == "__main__":
-    blockchain = Blockchain()
+    # Load the existing blockchain from a file
+    blockchain = Blockchain.load_from_file('blockchain.pkl')
 
-    # Create and add the genesis block
-    genesis_block = blockchain.createGenesisBlock()
-    blockchain.addBlock(genesis_block)
+    if blockchain is None:
+        # If the file doesn't exist or is empty, create a new blockchain
+        blockchain = Blockchain()
+
+        # Create and add the genesis block
+        genesis_block = blockchain.createGenesisBlock()
+        blockchain.addBlock(genesis_block)
 
     # Create metadata entries for fragmented files
     file_metadata_entries = [
@@ -34,10 +40,23 @@ if __name__ == "__main__":
         ])
     ]
 
-    # Create a new block for each file's metadata and add them to the blockchain
+    # Create user data entries
+    user_data_entries = [
+        UserData("user_id_1", "user1", "hashed_password_1", "user1@email.com"),
+        UserData("user_id_2", "user2", "hashed_password_2", "user2@email.com")
+        # Add more user data entries as needed
+    ]
+
+    # Create a new block for each file's metadata and add them to the existing blockchain
     for file_metadata in file_metadata_entries:
         block = Block(time.time(), [file_metadata.to_dict()])
         blockchain.addBlock(block)
 
-    # Print the blockchain
+    # Create a new block for each user's data and add them to the existing blockchain
+    for user_data in user_data_entries:
+        block = Block(time.time(), [user_data.to_dict()])
+        blockchain.addBlock(block)
+
+    # Save the updated blockchain back to the file
     print(blockchain)
+    blockchain.save_to_file('blockchain.pkl')
