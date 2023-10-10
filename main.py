@@ -4,7 +4,6 @@ from blockchain import Blockchain  # Assuming Blockchain class is defined in 'bl
 from block import Block  # Assuming Block class is defined in 'block.py' file
 from metadata import FileMetadata  # Import the FileMetadata class from 'metadata.py'
 from fragment import Fragment  # Import the Fragment class from 'fragment.py'
-from userdata import UserData  # Import the UserData class from 'userdata.py'
 import time
 
 if __name__ == "__main__":

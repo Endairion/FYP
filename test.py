@@ -8,8 +8,8 @@ user_database = {}
 # File to store encrypted hashed user credentials
 credentials_file = "user_credentials.encrypted"
 
-# Encryption key (you should keep this key safe)
-encryption_key = Fernet.generate_key()
+# Encryption key
+encryption_key = b'HBh2b7Cqd_-9xzVrx_nCNg9rp6_TJGsbCI5CcpOWscI='
 
 # Initialize the Fernet cipher with the encryption key
 cipher_suite = Fernet(encryption_key)

@@ -26,7 +26,10 @@ class Node:
                     break
                 message = data.decode('utf-8')
                 print(f"Received: {message}")
-                # You can add message handling logic here
+
+                # Reply with a message (you can add your own message handling logic here)
+                reply = input("Enter your reply: ")
+                self.send_message(client_socket, reply)
 
         except Exception as e:
             print(f"Error: {str(e)}")
@@ -62,5 +65,11 @@ class Node:
             while True:
                 message = input("Enter your message: ")
                 client_socket.send(message.encode('utf-8'))
+        except Exception as e:
+            print(f"Error sending message: {str(e)}")
+
+    def send_message(self, peer_socket, message):
+        try:
+            peer_socket.send(message.encode('utf-8'))
         except Exception as e:
             print(f"Error sending message: {str(e)}")
