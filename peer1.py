@@ -5,7 +5,7 @@ def main():
     node_port = 8080  # Change to the port node1 is listening on
 
     peer1 = Node()
-    peer1.connect_to_peer(node_ip, node_port)
+
 
 if __name__ == "__main__":
     main()

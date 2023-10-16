@@ -6,24 +6,24 @@ class Node:
     def __init__(self):
         self.ip = None
         self.upnp = upnpy.UPnP()
-        #self.configure_upnp_port_forwarding()
+        self.configure_upnp_port_forwarding()
 
     def configure_upnp_port_forwarding(self):
         try:
-            self.upnp.discover()
-            external_port = 8081  # Replace with the desired external port
+            devices = self.upnp.discover()
+            print(f'Discovering UPnP port...')
+            device = self.upnp.get_igd()
+            device.get_services()
+            
+            
+            external_port = 81  # Replace with the desired external port
             internal_port = 8081  # Replace with the port your node is listening on
             protocol = "TCP"
 
-            mapping = upnpy.portmapping.PortMapping(self.ip, external_port, protocol, internal_port)
-            mapping_description = "P2P Application"
+            service.AddPortMapping.get_input_arguments()
 
-            self.upnp.add_portmapping(mapping, description=mapping_description)
-            print(f"Port forwarding set up: External Port {external_port} -> Internal Port {internal_port}")
-        except upnpy.exceptions.UPnPDiscoverError as e:
-            print(f"UPnP discovery error: {str(e)}")
-        except upnpy.exceptions.AddPortmappingError as e:
-            print(f"Failed to configure port forwarding via UPnP: {str(e)}")
+        except Exception as e:
+            print(f"Exception:", e)
 
     def connect_to_peer(self, peer_ip, peer_port):
         try:
