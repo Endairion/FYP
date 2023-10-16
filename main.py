@@ -39,22 +39,11 @@ if __name__ == "__main__":
         ])
     ]
 
-    # Create user data entries
-    user_data_entries = [
-        UserData("user_id_1", "user1", "hashed_password_1", "user1@email.com"),
-        UserData("user_id_2", "user2", "hashed_password_2", "user2@email.com")
-        # Add more user data entries as needed
-    ]
-
     # Create a new block for each file's metadata and add them to the existing blockchain
     for file_metadata in file_metadata_entries:
         block = Block(time.time(), [file_metadata.to_dict()])
         blockchain.addBlock(block)
 
-    # Create a new block for each user's data and add them to the existing blockchain
-    for user_data in user_data_entries:
-        block = Block(time.time(), [user_data.to_dict()])
-        blockchain.addBlock(block)
 
     # Save the updated blockchain back to the file
     print(blockchain)

@@ -1,12 +1,11 @@
-# Contents of peer1.py
 from node import Node
-import threading
+
+def main():
+    node_ip = "NODE1_IP"  # Replace with the actual IP address of node1
+    node_port = 8080  # Change to the port node1 is listening on
+
+    peer1 = Node()
+    peer1.connect_to_peer(node_ip, node_port)
 
 if __name__ == "__main__":
-    peer1 = Node(12345)
-
-    server_thread = threading.Thread(target=peer1.listen_for_connections)
-    server_thread.start()
-    
-    # Connect to peer1
-    peer1.connect_to_peer('127.0.0.1', 54321)
+    main()
