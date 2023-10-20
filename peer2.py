@@ -1,11 +1,7 @@
 # Contents of peer1.py
 from node import Node
-import threading
 
 if __name__ == "__main__":
-    # Create a Node instance for Peer 2 with a desired port
-    peer2 = Node(12346)
-
-    # Start listening for incoming connections and connecting to peers
-    listener_and_connector_thread = threading.Thread(target=peer2.listen_and_connect)
-    listener_and_connector_thread.start()
+    node2 = Node()
+    node2.ip = '0.0.0.0'  # set the IP address to the public IP of the machine
+    node2.connect_to_peer('ip_address_of_node1', 8000)  # replace 'ip_address_of_node1' with the public IP of the first machine
