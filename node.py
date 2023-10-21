@@ -4,8 +4,8 @@ import threading
 from DHT import DistributedHashTable
 
 class Node:
-    def __init__(self):
-        self.ip = None
+    def __init__(self,ip):
+        self.ip = ip
         self.port = 8000
         self.peers = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
