@@ -1,8 +1,7 @@
 from node import RelayNode
 
 def main():
-    node1 = RelayNode()
-    node1.ip = '10.148.0.4'  # set the IP address to the public IP of the machine
+    node1 = RelayNode('10.148.0.4')
     node1.start()
 
 

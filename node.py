@@ -88,8 +88,8 @@ class Node:
 #             print("Relay node not found in DHT")
 
 class RelayNode(Node):
-    def __init__(self, ip, port, dht):
-        super().__init__(ip, port)
+    def __init__(self, ip):
+        super().__init__(ip)
         self.dht = DistributedHashTable()
 
     def start(self):
