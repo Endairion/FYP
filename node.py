@@ -1,6 +1,7 @@
 import json
 import socket
 import threading
+from DHT import DistributedHashTable
 
 class Node:
     def __init__(self):
@@ -14,27 +15,22 @@ class Node:
             self.socket.connect((peer_ip, peer_port))
             print(f"Connected to {peer_ip}:{peer_port}")
             self.peers.append((peer_ip, peer_port))
-
-            self.socket.close()
+            return True
 
         except Exception as e:
             print(f"Error in connect_to_peer: {str(e)}")
+            return False
 
-    def listen_and_connect(self):
+    def disconnect_from_peer(self, peer_ip, peer_port):
         try:
-            self.socket.bind((self.ip, self.port))
-            self.socket.listen(5)
-
-            print(f"Listening for incoming connections on {self.ip}:{self.port}")
-
-            while True:
-                conn, addr = self.socket.accept()
-                print(f"Connected to {addr}")
-                self.peers.append(addr)
-                threading.Thread(target=self.handle_client, args=(conn,)).start()
+            self.socket.close()
+            self.peers.remove((peer_ip, peer_port))
+            print(f"Disconnected from {peer_ip}:{peer_port}")
+            return True
 
         except Exception as e:
-            print(f"Error in listen_and_connect: {str(e)}")
+            print(f"Error in disconnect_from_peer: {str(e)}")
+            return False
 
     def handle_client(self, conn):
         while True:
@@ -91,66 +87,65 @@ class Node:
 #         else:
 #             print("Relay node not found in DHT")
 
-# class RelayNode:
-#     def __init__(self, ip, port, dht):
-#         self.ip = ip
-#         self.port = port
-#         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#         self.dht = dht
+class RelayNode(Node):
+    def __init__(self, ip, port, dht):
+        super().__init__(ip, port)
+        self.dht = DistributedHashTable()
 
-#     def start(self):
-#         try:
-#             self.socket.bind((self.ip, self.port))
-#             self.socket.listen(5)
+    def start(self):
+        try:
+            self.socket.bind((self.ip, self.port))
+            self.socket.listen(5)
 
-#             print(f"Relay node listening for incoming connections on {self.ip}:{self.port}")
+            print(f"Relay node listening for incoming connections on {self.ip}:{self.port}")
 
-#             while True:
-#                 client_socket, client_address = self.socket.accept()
-#                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
-#                 threading.Thread(target=self.handle_client, args=(client_socket,)).start()
+            while True:
+                client_socket, client_address = self.socket.accept()
+                print(f"Received connection from {client_address[0]}:{client_address[1]}")
+                self.dht.put("IP",client_address[0])
+                threading.Thread(target=self.handle_client, args=(client_socket,)).start()
 
-#         except Exception as e:
-#             print(f"Error in start: {str(e)}")
+        except Exception as e:
+            print(f"Error in start: {str(e)}")
 
-#     def handle_client(self, client_socket):
-#         try:
-#             request = client_socket.recv(1024).decode('utf-8')
-#             request = json.loads(request)
+    # def handle_client(self, client_socket):
+    #     try:
+    #         request = client_socket.recv(1024).decode('utf-8')
+    #         request = json.loads(request)
 
-#             if request['type'] == 'receive_file':
-#                 file_name = request['file_name']
-#                 file_data = request['file_data']
+    #         if request['type'] == 'receive_file':
+    #             file_name = request['file_name']
+    #             file_data = request['file_data']
 
-#                 # Process the file data and create a metadata object
-#                 metadata = Metadata(file_name, file_data)
+    #             # Process the file data and create a metadata object
+    #             metadata = Metadata(file_name, file_data)
 
-#                 # Fragment the file and distribute the fragments to the mining nodes
-#                 fragments = fragment_file(file_data)
-#                 for node_id in self.dht.getAll():
-#                     if node_id != self.dht.getSelfId():
-#                         node = self.dht.get(node_id)
-#                         message = {
-#                             'type': 'receive_fragment',
-#                             'file_name': file_name,
-#                             'fragment': fragments[node_id]
-#                         }
-#                         send_message(node, message)
+    #             # Fragment the file and distribute the fragments to the mining nodes
+    #             fragments = fragment_file(file_data)
+    #             for node_id in self.dht.getAll():
+    #                 if node_id != self.dht.getSelfId():
+    #                     node = self.dht.get(node_id)
+    #                     message = {
+    #                         'type': 'receive_fragment',
+    #                         'file_name': file_name,
+    #                         'fragment': fragments[node_id]
+    #                     }
+    #                     send_message(node, message)
 
-#                 # Send the metadata to the mining node
-#                 mining_node = self.dht.get('mining_node')
-#                 if mining_node:
-#                     message = {
-#                         'type': 'receive_metadata',
-#                         'metadata': metadata.to_dict()
-#                     }
-#                     send_message(mining_node, message)
+    #             # Send the metadata to the mining node
+    #             mining_node = self.dht.get('mining_node')
+    #             if mining_node:
+    #                 message = {
+    #                     'type': 'receive_metadata',
+    #                     'metadata': metadata.to_dict()
+    #                 }
+    #                 send_message(mining_node, message)
 
-#                 else:
-#                     print("Mining node not found in DHT")
+    #             else:
+    #                 print("Mining node not found in DHT")
 
-#         except Exception as e:
-#             print(f"Error in handle_client: {str(e)}")
+    #     except Exception as e:
+    #         print(f"Error in handle_client: {str(e)}")
 
-#         finally:
-#             client_socket.close()
+    #     finally:
+    #         client_socket.close()
