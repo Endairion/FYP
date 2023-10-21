@@ -103,7 +103,6 @@ class RelayNode(Node):
                 client_socket, client_address = self.socket.accept()
                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
                 self.dht.put("IP",client_address[0])
-                threading.Thread(target=self.handle_client, args=(client_socket,)).start()
 
         except Exception as e:
             print(f"Error in start: {str(e)}")
