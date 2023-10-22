@@ -1,7 +1,7 @@
 from node import RelayNode
 
 def main():
-    node1 = RelayNode('10.148.0.4')
+    node1 = RelayNode()
     node1.start()
 
 

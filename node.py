@@ -32,7 +32,7 @@ class Node:
             print(f"Error in disconnect_from_peer: {str(e)}")
             return False
         
-    def start_peer_thread(self, peer_socket):
+    def start_peer_thread(self):
         peer_thread = threading.Thread(target=self.listen)
         peer_thread.start()
 
@@ -47,7 +47,6 @@ class Node:
             while True:
                 relay_socket, client_address = self.socket.accept()
                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
-                self.handle_relay_connection(relay_socket)
 
         except Exception as e:
             print(f"Error in start: {str(e)}")
@@ -124,7 +123,7 @@ class Node:
 
 class RelayNode(Node):
     def __init__(self, ip):
-        super().__init__(ip)
+        super().__init__(self.get_internal_ip())
         self.dht = DistributedHashTable()
         self.credentials = UserCredentials()
 
