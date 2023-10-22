@@ -38,6 +38,7 @@ class Node:
         peer_thread = threading.Thread(target=self.handle_peer_connection, args=(peer_socket,))
         peer_thread.start()
 
+    @staticmethod
     def get_internal_ip():
         try:
             # Run a command to retrieve the IP address of the default network interface
