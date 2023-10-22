@@ -2,6 +2,6 @@
 from node import Node
 
 if __name__ == "__main__":
-    node2 = Node()
+    node2 = Node('35.240.242.166')
     internal_ip = node2.get_internal_ip()
     #node2.connect_to_peer('34.143.221.135', 8000)  # replace 'ip_address_of_node1' with the public IP of the first machine
