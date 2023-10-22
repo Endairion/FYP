@@ -118,20 +118,39 @@ class RelayNode(Node):
         except Exception as e:
             print(f"Error in start: {str(e)}")
 
-    def authenticate(self, client_socket):
-        client_socket.sendall(b"LOGIN\n")
-        data = client_socket.recv(1024).decode().strip()
+def authenticate(self, client_socket):
+    client_socket.sendall(b"LOGIN OR REGISTER?\n")
+    data = client_socket.recv(1024).decode().strip()
 
-        if data != "READY":
-            return False
+    if data != "READY":
+        return False
 
-        client_socket.sendall(b"USERNAME\n")
+    client_socket.sendall(b"1. LOGIN\n2. REGISTER\n")
+    choice = client_socket.recv(1024).decode().strip()
+
+    if choice == "1":
+        client_socket.sendall(b"USERNAME: ")
         username = client_socket.recv(1024).decode().strip()
 
-        client_socket.sendall(b"PASSWORD\n")
+        client_socket.sendall(b"PASSWORD: ")
         password = client_socket.recv(1024).decode().strip()
 
         return username, self.credentials.login(username, password)
+
+    elif choice == "2":
+        client_socket.sendall(b"USERNAME: ")
+        username = client_socket.recv(1024).decode().strip()
+
+        client_socket.sendall(b"PASSWORD: ")
+        password = client_socket.recv(1024).decode().strip()
+
+        try:
+            self.credentials.register(username, password)
+            return username, True
+        except ValueError:
+            return False
+    else:
+        return False
     
     # def handle_client(self, client_socket):
     #     try:
