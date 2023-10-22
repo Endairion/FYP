@@ -1,8 +1,6 @@
 import json
 import socket
 import threading
-import subprocess
-import re
 from DHT import DistributedHashTable
 from UserCredential import UserCredentials
 
@@ -41,10 +39,11 @@ class Node:
     @staticmethod
     def get_internal_ip():
         try:
-            # Run a command to retrieve the IP address of the default network interface
-            output = subprocess.check_output(["ipconfig" if subprocess.call("where ifconfig", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) != 0 else "ifconfig"])
-            output = output.decode("utf-8")
-            internal_ip = re.search(r"inet (\d+\.\d+\.\d+\.\d+)", output).group(1)
+            # Create a temporary socket object to retrieve the internal IP address
+            temp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            temp_socket.connect(("8.8.8.8", 80))
+            internal_ip = temp_socket.getsockname()[0]
+            temp_socket.close()
             return internal_ip
 
         except Exception as e:
