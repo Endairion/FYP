@@ -2,6 +2,7 @@ import json
 import socket
 import threading
 from DHT import DistributedHashTable
+from UserCredential import UserCredentials
 
 class Node:
     def __init__(self,ip):
@@ -91,6 +92,7 @@ class RelayNode(Node):
     def __init__(self, ip):
         super().__init__(ip)
         self.dht = DistributedHashTable()
+        self.credentials = UserCredentials()
 
     def start(self):
         try:
@@ -102,11 +104,35 @@ class RelayNode(Node):
             while True:
                 client_socket, client_address = self.socket.accept()
                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
-                self.dht.put("IP",client_address[0])
+
+                username, is_authenticated = self.authenticate(client_socket)
+                if not is_authenticated:
+                    print(f"Authentication failed for {client_address[0]}:{client_address[1]}")
+                    client_socket.close()
+                    continue
+                else:
+                    self.dht.put(username,client_address[0])
+                    print(f'User {username} authenticated successfully')
+                    client_socket.close()
 
         except Exception as e:
             print(f"Error in start: {str(e)}")
 
+    def authenticate(self, client_socket):
+        client_socket.sendall(b"LOGIN\n")
+        data = client_socket.recv(1024).decode().strip()
+
+        if data != "READY":
+            return False
+
+        client_socket.sendall(b"USERNAME\n")
+        username = client_socket.recv(1024).decode().strip()
+
+        client_socket.sendall(b"PASSWORD\n")
+        password = client_socket.recv(1024).decode().strip()
+
+        return username, self.credentials.login(username, password)
+    
     # def handle_client(self, client_socket):
     #     try:
     #         request = client_socket.recv(1024).decode('utf-8')
