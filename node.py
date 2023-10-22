@@ -16,17 +16,9 @@ class Node:
         self.socket.listen()
     
         while True:
-            # Start a new thread to handle incoming connections
-            t = threading.Thread(target=self.accept_connection)
-            t.start()
-
-    def accept_connection(self):
-        while True:
-            # Accept incoming connections
             client_socket, client_address = self.socket.accept()
             print(f"Received connection from {client_address[0]}:{client_address[1]}")
             self.connections.append(client_socket)
-
 
     def connect_to_peer(self, peer_ip):
         try:
