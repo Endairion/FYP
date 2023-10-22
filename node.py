@@ -13,14 +13,15 @@ class Node:
 
     def connect_to_peer(self, peer_ip, peer_port):
         try:
-            self.socket.connect((peer_ip, peer_port))
+            socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            socket_obj.connect((peer_ip, peer_port))
             print(f"Connected to {peer_ip}:{peer_port}")
             self.peers.append((peer_ip, peer_port))
-            return True
+            return socket_obj
 
         except Exception as e:
             print(f"Error in connect_to_peer: {str(e)}")
-            return False
+            return None
 
     def disconnect_from_peer(self, peer_ip, peer_port):
         try:
@@ -104,7 +105,8 @@ class RelayNode(Node):
             while True:
                 client_socket, client_address = self.socket.accept()
                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
-
+                self.disconnect_from_peer(client_address[0],client_address[1])
+                client_socket = self.connect_to_peer(client_address[0], 8000)
                 username, is_authenticated = self.authenticate(client_socket)
                 if not is_authenticated:
                     print(f"Authentication failed for {client_address[0]}:{client_address[1]}")
