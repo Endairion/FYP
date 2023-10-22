@@ -36,6 +36,10 @@ class Node:
     def start_peer_thread(self):
         peer_thread = threading.Thread(target=self.listen)
         peer_thread.start()
+        while True:
+            if self.listen():
+                peer_thread.join()
+                break
 
     def listen(self):
         try:
@@ -48,14 +52,7 @@ class Node:
             while True:
                 relay_socket, client_address = self.socket.accept()
                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
-
-                # Receive an authentication request from the relay node
-                data = relay_socket.recv(1024).decode().strip()
-                if data != "AUTHENTICATE":
-                    relay_socket.close()
-                    continue
-                
-                relay_socket.sendall(b"READY")
+                return True
 
         except Exception as e:
             print(f"Error in start: {str(e)}")
@@ -148,27 +145,17 @@ class RelayNode(Node):
                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
 
                 # Start a new thread to connect to the peer node
-                t = threading.Thread(target=self.connect_to_peer_and_authenticate, args=(client_address[0],))
+                t = threading.Thread(target=self.connect_to_peer, args=(client_address[0], self.port))
                 t.start()
+
+                while True:
+                    if self.connect_to_peer is not None:
+                        t.join()
+                        break
 
         except Exception as e:
             print(f"Error in start: {str(e)}")
 
-    def connect_to_peer_and_authenticate(self, ip):
-        try:
-            # Connect to the peer node using its IP address and port 8000
-            peer_socket = self.connect_to_peer(ip, 8000)
-
-            # Authenticate the client using the peer socket
-            if peer_socket is not None:
-                username, is_authenticated = self.authenticate(peer_socket)
-                if not is_authenticated:
-                    print(f"Authentication failed for {ip}")
-                    peer_socket.close()
-                else:
-                    self.dht.put(username, ip)
-                    print(f'User {username} authenticated successfully')
-                    peer_socket.close()
 
         except Exception as e:
             print(f"Error in connect_to_peer_and_authenticate: {str(e)}")
