@@ -173,42 +173,42 @@ class RelayNode(Node):
         except Exception as e:
             print(f"Error in connect_to_peer_and_authenticate: {str(e)}")
 
-def authenticate(self, client_socket):
-    max_attempts = 3
-    attempts = 0
+    def authenticate(self, client_socket):
+        max_attempts = 3
+        attempts = 0
 
-    while attempts < max_attempts:
-        client_socket.sendall(b"AUTHENTICATE\n")
-        data = client_socket.recv(1024).decode().strip()
+        while attempts < max_attempts:
+            client_socket.sendall(b"AUTHENTICATE\n")
+            data = client_socket.recv(1024).decode().strip()
 
-        if data != "READY":
-            return False
+            if data != "READY":
+                return False
 
-        client_socket.sendall(b"1. LOGIN\n2. REGISTER\n")
-        choice = client_socket.recv(1024).decode().strip()
+            client_socket.sendall(b"1. LOGIN\n2. REGISTER\n")
+            choice = client_socket.recv(1024).decode().strip()
 
-        if choice == "1":
-            client_socket.sendall(b"ENTER USERNAME:\n")
-            username = client_socket.recv(1024).decode().strip()
-            client_socket.sendall(b"ENTER PASSWORD:\n")
-            password = client_socket.recv(1024).decode().strip()
-            is_authenticated = self.credentials.login(username, password)
-            if is_authenticated:
-                return username
+            if choice == "1":
+                client_socket.sendall(b"ENTER USERNAME:\n")
+                username = client_socket.recv(1024).decode().strip()
+                client_socket.sendall(b"ENTER PASSWORD:\n")
+                password = client_socket.recv(1024).decode().strip()
+                is_authenticated = self.credentials.login(username, password)
+                if is_authenticated:
+                    return username
 
-        elif choice == "2":
-            client_socket.sendall(b"ENTER USERNAME:\n")
-            username = client_socket.recv(1024).decode().strip()
-            client_socket.sendall(b"ENTER PASSWORD:\n")
-            password = client_socket.recv(1024).decode().strip()
-            is_registered = self.credentials.register(username, password)
-            if is_registered:
-                return username
+            elif choice == "2":
+                client_socket.sendall(b"ENTER USERNAME:\n")
+                username = client_socket.recv(1024).decode().strip()
+                client_socket.sendall(b"ENTER PASSWORD:\n")
+                password = client_socket.recv(1024).decode().strip()
+                is_registered = self.credentials.register(username, password)
+                if is_registered:
+                    return username
 
-        attempts += 1
-        time.sleep(5)
+            attempts += 1
+            time.sleep(5)
 
-    return False
+        return False
     
             
         
