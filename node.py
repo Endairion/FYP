@@ -48,6 +48,14 @@ class Node:
                 relay_socket, client_address = self.socket.accept()
                 print(f"Received connection from {client_address[0]}:{client_address[1]}")
 
+                # Receive an authentication request from the relay node
+                data = relay_socket.recv(1024).decode().strip()
+                if data != "AUTHENTICATE":
+                    relay_socket.close()
+                    continue
+                
+                relay_socket.sendall(b"READY")
+
         except Exception as e:
             print(f"Error in start: {str(e)}")
 
@@ -164,7 +172,7 @@ class RelayNode(Node):
             print(f"Error in connect_to_peer_and_authenticate: {str(e)}")
 
     def authenticate(self, client_socket):
-        client_socket.sendall(b"LOGIN OR REGISTER?\n")
+        client_socket.sendall(b"AUTHENTICATE\n")
         data = client_socket.recv(1024).decode().strip()
 
         if data != "READY":
