@@ -2,6 +2,7 @@ import json
 import socket
 import threading
 import subprocess
+import re
 from DHT import DistributedHashTable
 from UserCredential import UserCredentials
 
