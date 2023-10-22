@@ -1,20 +1,27 @@
 import threading
 from node import Node
 
+def start_node(node):
+    node.start()
+
 def connect_peer(node):
-    node.connect_to_peer('34.143.221.135')  # Connect to Peer 2 on port 8002
+    node.connect_to_peer('34.143.221.135')  # Connect to the other peer
 
 if __name__ == "__main__":
-    node = Node()  # Create a Node instance for Peer 1
-    node.start()  # Start listening for incoming connections
+    node = Node()
+
+    # Start a thread for node2's start method
+    node_thread = threading.Thread(target=start_node, args=(node,))
+    node_thread.start()
+
+    input("Press Enter to connect")
 
     # Start a thread to handle the connection setup
     connection_thread = threading.Thread(target=connect_peer, args=(node,))
     connection_thread.start()
 
-    input("Press Enter to interact with the program")
-
     # You can add your user interaction code here
 
-    # Wait for the connection setup thread to complete (optional)
+    # Wait for both threads to complete (optional)
+    node_thread.join()
     connection_thread.join()
