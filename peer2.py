@@ -6,4 +6,4 @@ if __name__ == "__main__":
     peer_socket = node2.connect_to_peer('34.143.221.135', 8000)
     if peer_socket:
         # Start a new thread to handle the peer connection
-        node2.run_peer_thread(peer_socket)
+        node2.start_peer_thread()
