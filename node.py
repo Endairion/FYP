@@ -16,7 +16,6 @@ class Node:
             socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket_obj.connect((peer_ip, peer_port))
             print(f"Connected to {peer_ip}:{peer_port}")
-            self.peers.append((peer_ip, peer_port))
             return socket_obj
 
         except Exception as e:
@@ -26,7 +25,6 @@ class Node:
     def disconnect_from_peer(self, peer_ip, peer_port):
         try:
             self.socket.close()
-            self.peers.remove((peer_ip, peer_port))
             print(f"Disconnected from {peer_ip}:{peer_port}")
             return True
 
