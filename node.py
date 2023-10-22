@@ -1,6 +1,7 @@
 import json
 import socket
 import threading
+import time
 from DHT import DistributedHashTable
 from UserCredential import UserCredentials
 
@@ -159,19 +160,24 @@ class RelayNode(Node):
             peer_socket = self.connect_to_peer(ip, 8000)
 
             # Authenticate the client using the peer socket
-            username, is_authenticated = self.authenticate(peer_socket)
-            if not is_authenticated:
-                print(f"Authentication failed for {ip}")
-                peer_socket.close()
-            else:
-                self.dht.put(username, ip)
-                print(f'User {username} authenticated successfully')
-                peer_socket.close()
+            if peer_socket is not None:
+                username, is_authenticated = self.authenticate(peer_socket)
+                if not is_authenticated:
+                    print(f"Authentication failed for {ip}")
+                    peer_socket.close()
+                else:
+                    self.dht.put(username, ip)
+                    print(f'User {username} authenticated successfully')
+                    peer_socket.close()
 
         except Exception as e:
             print(f"Error in connect_to_peer_and_authenticate: {str(e)}")
 
-    def authenticate(self, client_socket):
+def authenticate(self, client_socket):
+    max_attempts = 3
+    attempts = 0
+
+    while attempts < max_attempts:
         client_socket.sendall(b"AUTHENTICATE\n")
         data = client_socket.recv(1024).decode().strip()
 
@@ -182,28 +188,31 @@ class RelayNode(Node):
         choice = client_socket.recv(1024).decode().strip()
 
         if choice == "1":
-            client_socket.sendall(b"USERNAME: ")
+            client_socket.sendall(b"ENTER USERNAME:\n")
             username = client_socket.recv(1024).decode().strip()
-
-            client_socket.sendall(b"PASSWORD: ")
+            client_socket.sendall(b"ENTER PASSWORD:\n")
             password = client_socket.recv(1024).decode().strip()
-
-            return username, self.credentials.login(username, password)
+            is_authenticated = self.credentials.login(username, password)
+            if is_authenticated:
+                return username
 
         elif choice == "2":
-            client_socket.sendall(b"USERNAME: ")
+            client_socket.sendall(b"ENTER USERNAME:\n")
             username = client_socket.recv(1024).decode().strip()
-
-            client_socket.sendall(b"PASSWORD: ")
+            client_socket.sendall(b"ENTER PASSWORD:\n")
             password = client_socket.recv(1024).decode().strip()
+            is_registered = self.credentials.register(username, password)
+            if is_registered:
+                return username
 
-            try:
-                self.credentials.register(username, password)
-                return username, True
-            except ValueError:
-                return False
-        else:
-            return False
+        attempts += 1
+        time.sleep(5)
+
+    return False
+    
+            
+        
+        
     
     # def handle_client(self, client_socket):
     #     try:
