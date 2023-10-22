@@ -31,26 +31,44 @@ class Node:
         except Exception as e:
             print(f"Error in disconnect_from_peer: {str(e)}")
             return False
+        
+    def start_peer_thread(self, peer_socket):
+        peer_thread = threading.Thread(target=self.handle_peer_connection, args=(peer_socket,))
+        peer_thread.start()
 
-    def handle_client(self, conn):
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            message = json.loads(data.decode('utf-8'))
-            print(f"Received message: {message}")
-            self.broadcast(message)
+    def get_internal_ip():
+        try:
+            # Create a temporary socket object to retrieve the internal IP address
+            temp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            temp_socket.connect(("8.8.8.8", 80))
+            internal_ip = temp_socket.getsockname()[0]
+            temp_socket.close()
+            return internal_ip
 
-    def broadcast(self, message):
-        encoded_message = json.dumps(message).encode('utf-8')
-        for peer in self.peers:
-            try:
-                peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                peer_socket.connect(peer)
-                peer_socket.send(encoded_message)
-                peer_socket.close()
-            except Exception as e:
-                print(f"Error in broadcast: {str(e)}")
+        except Exception as e:
+            print(f"Error in get_internal_ip: {str(e)}")
+            return None
+
+
+    # def handle_client(self, conn):
+    #     while True:
+    #         data = conn.recv(1024)
+    #         if not data:
+    #             break
+    #         message = json.loads(data.decode('utf-8'))
+    #         print(f"Received message: {message}")
+    #         self.broadcast(message)
+
+    # def broadcast(self, message):
+    #     encoded_message = json.dumps(message).encode('utf-8')
+    #     for peer in self.peers:
+    #         try:
+    #             peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #             peer_socket.connect(peer)
+    #             peer_socket.send(encoded_message)
+    #             peer_socket.close()
+    #         except Exception as e:
+    #             print(f"Error in broadcast: {str(e)}")
 
 # class ClientNode(Node):
 #     def __init__(self, dht):
