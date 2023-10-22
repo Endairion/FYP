@@ -122,7 +122,7 @@ class Node:
 #             print("Relay node not found in DHT")
 
 class RelayNode(Node):
-    def __init__(self, ip):
+    def __init__(self):
         super().__init__(self.get_internal_ip())
         self.dht = DistributedHashTable()
         self.credentials = UserCredentials()
