@@ -5,8 +5,7 @@ from DHT import DistributedHashTable
 from UserCredential import UserCredentials
 
 class Node:
-    def __init__(self,ip):
-        self.ip = ip
+    def __init__(self):
         self.port = 8000
         self.peers = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
