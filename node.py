@@ -38,14 +38,24 @@ class Node:
             print(f"Error in send_message: {str(e)}")
 
     def receive_message(self, connection):
-        # Receive JSON message from socket
-        message_json = connection.recv(1024).decode()
+        # Receive data from the connection
+        data = connection.recv(1024)
 
-        # Parse JSON message into dictionary object
-        message = json.loads(message_json)
+        # Check if data is empty
+        if not data:
+            return None
 
-        # Return message dictionary
-        return message
+        # Decode the data as a UTF-8 string
+        message_json = data.decode('utf-8')
+
+        try:
+            # Parse the JSON-encoded string
+            message = json.loads(message_json)
+            return message
+
+        except Exception as e:
+            print(f"Error in receive_message: {e}")
+            return None
 
     @staticmethod
     def get_internal_ip():
