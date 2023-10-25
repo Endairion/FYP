@@ -28,6 +28,7 @@ class RelayNode(Node):
         # Receive and handle messages from connected peer
         while True:
             message = self.receive_message(connection)
+            peer_socket = self.connect_to_peer(connection.getpeername()[0])
 
             if message['type'] == 'login':
                 # Handle authentication message
@@ -35,8 +36,8 @@ class RelayNode(Node):
                 password = message['password']
 
                 result = self.userCredentials.login(username, password)
-
-                return result
+                self.send_message(result, peer_socket)
+                
         
             elif message['type'] == 'register':
                 # Handle registration message
@@ -45,7 +46,7 @@ class RelayNode(Node):
 
                 result = self.userCredentials.register(username, password)
 
-                return result
+                self.send_message(result, peer_socket)
 
             elif message['type'] == 'data':
                 # Handle data message
@@ -56,10 +57,3 @@ class RelayNode(Node):
                 self.send_message(response, connection)
 
             # Add more message types and handling code here
-
-    def add_user(self, username, password):
-        self.users[username] = password
-
-    def remove_user(self, username):
-        if username in self.users:
-            del self.users[username]

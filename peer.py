@@ -29,13 +29,9 @@ class Peer(Node):
             self.send_message(message, relay_socket)
 
             # Receive response from relay node
-            response = self.receive_message(relay_socket)
 
             # Close socket
             self.disconnect_from_peer(relay_socket)
-
-            # Return authentication result
-            return response['success']
 
         else:
             # Connection to relay node failed

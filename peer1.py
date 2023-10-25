@@ -5,9 +5,6 @@ from peer import Peer
 def start_node(node):
     node.start()
 
-def connect_peer(node):
-    node.connect_to_peer('')  # Connect to the other peer
-
 def handle_login():
     # Prompt user for username and password
     username = input("Enter your username: ")
