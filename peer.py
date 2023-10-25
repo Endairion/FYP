@@ -7,6 +7,7 @@ class Peer(Node):
         self.relay_ip = '34.143.221.135'
         self.logged_in = False
         self.username = None
+        self.thread_event = threading.Event()
 
     def start(self):
         # Bind the socket to the node's IP address and port number
@@ -33,7 +34,7 @@ class Peer(Node):
 
             # Receive response from relay node
             self.username = username
-
+            self.thread_event.wait()
             # Close socket
             self.disconnect_from_peer(relay_socket)
 
@@ -49,7 +50,7 @@ class Peer(Node):
             # Send registration message to relay node
             message = {"type": "register", "username": username, "password": password}
             self.send_message(message, relay_socket)
-
+            self.thread_event.wait()
             self.disconnect_from_peer(relay_socket)
         else:
             return False
