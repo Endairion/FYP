@@ -28,7 +28,7 @@ class RelayNode(Node):
         # Receive and handle messages from connected peer
         while True:
             message = self.receive_message(connection)
-            peer_socket = self.connect_to_peer(connection.getpeername()[0])
+            peer_socket = self.connect_to_peer(connection.getpeername())
 
             if message['type'] == 'login':
                 # Handle authentication message
