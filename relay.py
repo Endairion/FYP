@@ -31,23 +31,28 @@ class RelayNode(Node):
             ip = connection.getpeername()[0]
             peer_socket = self.connect_to_peer(ip)
 
-            if message['type'] == 'login':
+            if message is None:
+                # Connection closed by peer
+                break
+
+            elif message['type'] == 'login':
                 # Handle authentication message
                 username = message['username']
                 password = message['password']
 
                 result = self.userCredentials.login(username, password)
                 self.send_message(result, peer_socket)
-                
-        
+                self.disconnect_from_peer(peer_socket)
+
             elif message['type'] == 'register':
                 # Handle registration message
                 username = message['username']
                 password = message['password']
 
                 result = self.userCredentials.register(username, password)
-
                 self.send_message(result, peer_socket)
+                self.disconnect_from_peer(peer_socket)
+
 
             elif message['type'] == 'data':
                 # Handle data message
@@ -56,5 +61,3 @@ class RelayNode(Node):
                 # Send response back to sending peer
                 response = {"type": "data", "data": "Hello, Peer!"}
                 self.send_message(response, connection)
-
-            # Add more message types and handling code here

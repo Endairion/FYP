@@ -46,12 +46,20 @@ class Peer(Node):
             message = {"type": "register", "username": username, "password": password}
             self.send_message(message, relay_socket)
 
+            self.disconnect_from_peer(relay_socket)
+        else:
+            return False
+
     def handle_data(self, connection):
         # Receive and handle messages from connected peer
         while True:
             message = self.receive_message(connection)
+            
+            if message is None:
+                # Connection closed by peer
+                break
 
-            if message['type'] == 'login':
+            elif message['type'] == 'login':
                 # Handle authentication response
                 print(message['message'])
                 break
@@ -59,15 +67,4 @@ class Peer(Node):
             elif message['type'] == 'register':
                 # Handle registration response
                 print(message['message'])
-                break
-
-            elif message['type'] == 'data':
-                # Handle data message
-                print(f"Received message from {connection.getpeername()}: {message['data']}")
-
-                # Send response back to sending peer
-                response = {"type": "data", "data": "Hello, Peer!"}
-                self.send_message(response, connection)
-            else:
-                print("Invalid message type")
                 break
