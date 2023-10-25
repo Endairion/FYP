@@ -1,24 +1,10 @@
 import socket
-import threading
+import json
 class Node:
     def __init__(self):
         self.ip = None
         self.port = 8000
-        self.peers = []
-        self.connections = []
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    def start(self):
-        # Bind the socket to the node's IP address and port number
-        self.socket.bind((self.get_internal_ip(), self.port))
-
-        # Start listening for incoming connections
-        self.socket.listen()
-    
-        while True:
-            client_socket, client_address = self.socket.accept()
-            print(f"Received connection from {client_address[0]}:{client_address[1]}")
-            self.connections.append(client_socket)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
 
     def connect_to_peer(self, peer_ip):
         try:
@@ -39,6 +25,27 @@ class Node:
 
         except Exception as e:
             print(f"Error in disconnect_from_peer: {str(e)}")
+
+    def send_message(self, message, peer_socket):
+        try:
+            # Convert message dictionary to JSON string
+            message_json = json.dumps(message)
+
+            # Send JSON message to socket
+            peer_socket.sendall(message_json.encode())
+
+        except Exception as e:
+            print(f"Error in send_message: {str(e)}")
+
+    def receive_message(self, connection):
+        # Receive JSON message from socket
+        message_json = connection.recv(1024).decode()
+
+        # Parse JSON message into dictionary object
+        message = json.loads(message_json)
+
+        # Return message dictionary
+        return message
 
     @staticmethod
     def get_internal_ip():

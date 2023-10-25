@@ -25,21 +25,23 @@ class UserCredentials:
         hashed_username = self.hash(username)
         # Check if the username already exists
         if hashed_username in self.credentials:
-            raise ValueError("Username already exists")
+            return {"type": "register", "success": False, "message": "Username already exists"}
 
         hashed_password = self.hash(password)
 
         self.credentials[hashed_username] = hashed_password
         self.save()
 
+        return {"type": "register", "success": True, "message": "Registration successful"}
+
     def login(self, username, password):
         hashed_username = self.hash(username)
         hashed_password = self.hash(password)
 
         if hashed_username in self.credentials and self.credentials[hashed_username] == hashed_password:
-            return True
+            return {"type": "login", "success": True, "message": "Login successful"}
         else:
-            return False
+            return {"type": "login", "success": False, "message": "Invalid username or password"}
 
     def hash(self, data):
         return hashlib.sha256(data.encode()).hexdigest()

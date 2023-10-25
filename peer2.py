@@ -1,4 +1,6 @@
 import threading
+import json
+from UserCredential import UserCredentials
 from node import Node
 
 def start_node(node):
@@ -25,3 +27,24 @@ if __name__ == "__main__":
     # Wait for both threads to complete (optional)
     node_thread.join()
     connection_thread.join()
+
+
+def handle_message(sock):
+    # Receive JSON message from Peer1
+    message_json = sock.recv(1024).decode()
+
+    # Parse JSON message into dictionary object
+    message = json.loads(message_json)
+
+    # Extract user credentials from message
+    credentials_json = message['data']
+    credentials = json.loads(credentials_json)
+
+    # Validate user credentials using UserCredentials class
+    user_credentials = UserCredentials()
+    is_valid = user_credentials.login(credentials['username'], credentials['password'])
+
+    # Send response back to Peer1 indicating whether the login was successful
+    response = {"type": "login_response", "data": {"success": is_valid}}
+    response_json = json.dumps(response)
+    sock.sendall(response_json.encode())
