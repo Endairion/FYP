@@ -5,12 +5,26 @@ from peer import Peer
 def start_node(node):
     node.start()
 
-def handle_login():
-    # Prompt user for username and password
-    username = input("Enter your username: ")
-    password = input("Enter your password: ")
+def handle_authentication():
+    # Prompt user to choose between login and register
+    while True:
+        choice = input("Enter '1' to login or '2' to register: ")
+        if choice == '1':
+            # Prompt user for username and password
+            username = input("Enter your username: ")
+            password = input("Enter your password: ")
 
-    node.login(username, password)
+            node.login(username, password)
+            break
+        elif choice == '2':
+            # Prompt user to register a new account
+            username = input("Enter a new username: ")
+            password = input("Enter a new password: ")
+
+            node.register(username, password)
+            break
+        else:
+            print("Invalid choice. Please enter '1' to login or '2' to register.")
     
 
 if __name__ == "__main__":
@@ -20,9 +34,9 @@ if __name__ == "__main__":
     node_thread = threading.Thread(target=start_node, args=(node,))
     node_thread.start()
 
-    input("Press Enter to Login")
+    input("Press Enter to Authenticate")
 
-    handle_login()
+    handle_authentication()
 
     # You can add your user interaction code here
 
