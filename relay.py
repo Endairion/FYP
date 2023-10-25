@@ -23,6 +23,7 @@ class RelayNode(Node):
             # Start a thread to handle the connection
             connection_thread = threading.Thread(target=self.handle_data, args=(client_socket,))
             connection_thread.start()
+            connection_thread.join()
 
     def handle_data(self, connection):
         # Receive and handle messages from connected peer

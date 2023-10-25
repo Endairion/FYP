@@ -7,7 +7,7 @@ def start_node(node):
 
 def handle_authentication():
     # Prompt user to choose between login and register
-    while True:
+    while not node.logged_in:
         choice = input("Enter '1' to login or '2' to register: ")
         if choice == '1':
             # Prompt user for username and password
@@ -15,13 +15,14 @@ def handle_authentication():
             password = input("Enter your password: ")
 
             node.login(username, password)
-            break
         elif choice == '2':
             # Prompt user to register a new account
             username = input("Enter a new username: ")
             password = input("Enter a new password: ")
 
             node.register(username, password)
+        elif choice == 'exit':
+            # Exit the loop
             break
         else:
             print("Invalid choice. Please enter '1' to login or '2' to register.")

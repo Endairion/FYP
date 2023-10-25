@@ -5,6 +5,8 @@ class Peer(Node):
     def __init__(self):
         super().__init__()
         self.relay_ip = '34.143.221.135'
+        self.logged_in = False
+        self.username = None
 
     def start(self):
         # Bind the socket to the node's IP address and port number
@@ -18,6 +20,7 @@ class Peer(Node):
             print(f"Received connection from {client_address[0]}:{client_address[1]}")
             connection_thread = threading.Thread(target=self.handle_data, args=(client_socket,))
             connection_thread.start()
+            connection_thread.join()
 
     def login(self, username, password):
         # Connect to relay node
@@ -29,6 +32,7 @@ class Peer(Node):
             self.send_message(message, relay_socket)
 
             # Receive response from relay node
+            self.username = username
 
             # Close socket
             self.disconnect_from_peer(relay_socket)
@@ -54,7 +58,7 @@ class Peer(Node):
         # Receive and handle messages from connected peer
         while True:
             message = self.receive_message(connection)
-            
+
             if message is None:
                 # Connection closed by peer
                 break
@@ -62,9 +66,11 @@ class Peer(Node):
             elif message['type'] == 'login':
                 # Handle authentication response
                 print(message['message'])
-                break
+                if message['success']:
+                    self.logged_in = message['success']
+                else:
+                    self.username = None
 
             elif message['type'] == 'register':
                 # Handle registration response
                 print(message['message'])
-                break
