@@ -39,6 +39,9 @@ if __name__ == "__main__":
 
     handle_authentication()
 
+    if node.logged_in:
+        print("Successfully logged in as", node.username)
+
     # You can add your user interaction code here
 
     # Wait for both threads to complete (optional)

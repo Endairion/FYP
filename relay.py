@@ -2,12 +2,14 @@ import json
 import threading
 from node import Node
 from UserCredential import UserCredentials
+from DHT import DistributedHashTable
 
 class RelayNode(Node):
     def __init__(self):
         super().__init__()
         self.users = {}
         self.userCredentials = UserCredentials()
+        self.dht = DistributedHashTable()
 
     def start(self):
         # Bind the socket to the node's IP address and port number
@@ -43,7 +45,12 @@ class RelayNode(Node):
 
                 result = self.userCredentials.login(username, password)
                 self.send_message(result, peer_socket)
-                self.disconnect_from_peer(peer_socket)
+                if result['success']:
+                    print("Login successful for ", username)
+                    self.dht.put(username, ip)
+                else:
+                    print(result['message'])
+                
 
             elif message['type'] == 'register':
                 # Handle registration message
@@ -52,8 +59,11 @@ class RelayNode(Node):
 
                 result = self.userCredentials.register(username, password)
                 self.send_message(result, peer_socket)
-                self.disconnect_from_peer(peer_socket)
-
+                if result['success']:
+                    print("Registration successful for ", username)
+                    print("Credentials added into DHT")
+                else:
+                    print(result['message'])
 
             elif message['type'] == 'data':
                 # Handle data message
