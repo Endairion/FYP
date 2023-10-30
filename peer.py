@@ -9,6 +9,7 @@ class Peer(Node):
         self.username = None
         self.thread_event = threading.Event()
 
+
     def start(self):
         # Bind the socket to the node's IP address and port number
         self.socket.bind((self.get_internal_ip(), self.port))
@@ -31,16 +32,22 @@ class Peer(Node):
             # Send authentication message to relay node
             message = {"type": "login", "username": username, "password": password}
             self.send_message(message, relay_socket)
-
             # Receive response from relay node
             self.username = username
-            self.thread_event.wait()
-            # Close socket
+            response = self.wait_for_response()
             self.disconnect_from_peer(relay_socket)
+            return response
 
         else:
             # Connection to relay node failed
-            return False
+            return {"success": False, "message": "Could not connect to Relay Node."}
+        
+    def wait_for_response(self):
+        # Wait for a response message from the relay node
+        self.thread_event.clear()
+        self.thread_event.wait()
+        response = self.thread_event.data
+        return response
         
     def register(self, username, password):
         # Connect to Relay Node
@@ -50,8 +57,23 @@ class Peer(Node):
             # Send registration message to relay node
             message = {"type": "register", "username": username, "password": password}
             self.send_message(message, relay_socket)
-            self.thread_event.wait()
+            response = self.wait_for_response()
             self.disconnect_from_peer(relay_socket)
+            return response
+        else:
+            return {"success": False, "message": "Could not connect to Relay Node."}
+        
+    def logout(self):
+        # Connect to Relay Node
+        relay_socket = self.connect_to_peer(self.relay_ip)
+
+        if relay_socket is not None:
+            # Send logout message to relay node
+            message = {"type": "logout", "username": self.username}
+            self.send_message(message, relay_socket)
+            response = self.wait_for_response()
+            self.disconnect_from_peer(relay_socket)
+            return response
         else:
             return False
 
@@ -65,13 +87,13 @@ class Peer(Node):
                 break
 
             elif message['type'] == 'login':
-                # Handle authentication response
-                print(message['message'])
-                if message['success']:
-                    self.logged_in = message['success']
-                else:
-                    self.username = None
+                self.thread_event.data = message
+                self.thread_event.set()
 
             elif message['type'] == 'register':
-                # Handle registration response
+                self.thread_event.data = message
+                self.thread_event.set()
+            
+            elif message['type'] == 'logout':
+                # Handle logout response
                 print(message['message'])

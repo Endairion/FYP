@@ -28,3 +28,6 @@ class DistributedHashTable:
         if key in self.data:
             del self.data[key]
             self.save_data()
+            return {"success": True, "message": f"Key '{key}' deleted successfully."}
+        else:
+            return {"success": False, "message": f"Key '{key}' not found."}

@@ -46,7 +46,7 @@ class RelayNode(Node):
                 result = self.userCredentials.login(username, password)
                 self.send_message(result, peer_socket)
                 if result['success']:
-                    print("Login successful for ", username)
+                    print("Login successful for", username)
                     self.dht.put(username, ip)
                 else:
                     print(result['message'])
@@ -64,6 +64,18 @@ class RelayNode(Node):
                     print("Credentials added into DHT")
                 else:
                     print(result['message'])
+
+            elif message['type'] == 'logout':
+                # Handle logout message
+                username = message['username']
+
+                result = self.dht.delete(username)
+                self.send_message(result, peer_socket)
+                if result['success']:
+                    print("Logout successful for ", username)
+                else:
+                    print(result['message'])
+
 
             elif message['type'] == 'data':
                 # Handle data message

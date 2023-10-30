@@ -1,6 +1,8 @@
 import threading
 import json
 from peer import Peer
+from login import LoginForm
+from PyQt5.QtWidgets import QApplication
 
 def start_node(node):
     node.start()
@@ -35,9 +37,10 @@ if __name__ == "__main__":
     node_thread = threading.Thread(target=start_node, args=(node,))
     node_thread.start()
 
-    input("Press Enter to Authenticate")
-
-    handle_authentication()
+    app = QApplication([])
+    login_form = LoginForm()
+    login_form.show()
+    app.exec_()
 
     if node.logged_in:
         print("Successfully logged in as", node.username)
