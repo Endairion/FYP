@@ -8,6 +8,7 @@ class LoginForm(QtWidgets.QWidget):
         uic.loadUi("login.ui", self)
         self.result = None
         self.node = Peer()
+        self.thread = None
         self.startNode()
        
 
@@ -41,6 +42,7 @@ class LoginForm(QtWidgets.QWidget):
     def close(self):
         reply = QtWidgets.QMessageBox.question(self, 'Exit', 'Are you sure you want to exit?', QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
         if reply == QtWidgets.QMessageBox.Yes:
+            self.node.stop()
             QtWidgets.QApplication.quit()
 
     def handle_login(self):
@@ -73,8 +75,8 @@ class LoginForm(QtWidgets.QWidget):
             QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
 
     def startNode(self):
-        threading.Thread(target=self.node.start, args=()).start()
-
+        self.thread = threading.Thread(target=self.node.start, args=())
+        self.thread.start()
 
 
 

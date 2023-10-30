@@ -7,6 +7,7 @@ class Peer(Node):
         self.relay_ip = '34.143.221.135'
         self.logged_in = False
         self.username = None
+        self.thread = None
         self.thread_event = threading.Event()
 
 
@@ -18,11 +19,24 @@ class Peer(Node):
         self.socket.listen()
     
         while True:
-            client_socket, client_address = self.socket.accept()
-            print(f"Received connection from {client_address[0]}:{client_address[1]}")
-            connection_thread = threading.Thread(target=self.handle_data, args=(client_socket,))
-            connection_thread.start()
-            connection_thread.join()
+            try:
+                connection, address = self.socket.accept()
+                self.thread = threading.Thread(target=self.handle_connection, args=(connection,))
+                self.thread.start()
+            except OSError:
+                # Socket has been closed or deleted
+                break
+            
+    def stop(self):
+        # Set the socket object to None before closing it
+        socket_to_close = self.socket
+        self.socket = None
+
+        # Close the bound socket and stop listening for incoming connections
+        if socket_to_close is not None:
+            socket_to_close.close()
+        if self.thread is not None:
+            self.thread.join()
 
     def login(self, username, password):
         # Connect to relay node
