@@ -1,6 +1,7 @@
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
 from peer import Peer
 import threading
+import re
 
 class LoginForm(QtWidgets.QWidget):
     def __init__(self):
@@ -16,6 +17,7 @@ class LoginForm(QtWidgets.QWidget):
         self.closeButton.clicked.connect(self.close)
         self.pushButton.clicked.connect(self.handle_login)
         self.pushButton_2.clicked.connect(self.handle_register)
+        self.hideButton.clicked.connect(self.toggle_password_visibility)
 
         # Initialize variables for tracking mouse movement
         self.dragging = False
@@ -45,19 +47,21 @@ class LoginForm(QtWidgets.QWidget):
             self.node.stop()
             QtWidgets.QApplication.quit()
 
+    def toggle_password_visibility(self):
+        if self.lineEdit_2.echoMode() == QtWidgets.QLineEdit.Password:
+            self.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Normal)
+            self.hideButton.setIcon(QtGui.QIcon("./icons/eye.svg"))
+        else:
+            self.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Password)
+            self.hideButton.setIcon(QtGui.QIcon("./icons/eye-off.svg"))
+
     def handle_login(self):
         # Get username and password from input fields
         username = self.lineEdit.text()
         password = self.lineEdit_2.text()
 
-        response = self.node.login(username, password)
-
-        if response['success']:
-            self.result = (True, response['message'])
-            self.close()
-        else:
-            self.result = (False, response['message'])
-            QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
+        thread = threading.Thread(target=self.thread_handler, args=('login',username, password))
+        thread.start()
 
 
     def handle_register(self):
@@ -65,7 +69,40 @@ class LoginForm(QtWidgets.QWidget):
         username = self.lineEdit.text()
         password = self.lineEdit_2.text()
 
-        response = self.node.register(username, password)
+        if not self.validate_password(password):
+            QtWidgets.QMessageBox.warning(self, 'Error', 'Invalid password. Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.')
+            return
+        
+        #thread = threading.Thread(target=self.thread_handler, args=('register',username, password))
+        #thread.start()
+
+    def validate_password(self, password):
+        # Check password length
+        if len(password) < 8:
+            return False
+
+        # Check for at least one uppercase letter
+        if not re.search(r'[A-Z]', password):
+            return False
+
+        # Check for at least one lowercase letter
+        if not re.search(r'[a-z]', password):
+            return False
+
+        # Check for at least one special character
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            return False
+
+        return True
+
+    def thread_handler(self, type, username, password):
+        if type == 'login':
+            response = self.node.login(username, password)
+        elif type == 'register':
+            response = self.node.register(username, password)
+        else:
+            print(f"Unknown request type: {type}")
+            return
 
         if response['success']:
             self.result = (True, response['message'])
