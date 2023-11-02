@@ -47,6 +47,9 @@ class LoginForm(QtWidgets.QWidget):
             self.node.stop()
             QtWidgets.QApplication.quit()
 
+    def exit(self):
+        QtWidgets.QApplication.quit()
+
     def toggle_password_visibility(self):
         if self.lineEdit_2.echoMode() == QtWidgets.QLineEdit.Password:
             self.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Normal)
@@ -102,8 +105,11 @@ class LoginForm(QtWidgets.QWidget):
                 self.result = (True, response['message'])
                 print(self.result)
                 # Pass the Peer object to main.py
-                import main
-                main.peer = self.node.peer
+                from main import MainWindow
+                window = MainWindow()
+                self.exit()
+                window.username = self.node.username
+                window.show()
             else:
                 self.result = (False, response['message'])
                 QtWidgets.QMessageBox.warning(self, 'Error', response['message'])

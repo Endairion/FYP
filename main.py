@@ -5,7 +5,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('ui_main.ui', self)
-
+        self.node = None
         self.dragging = False
         self.offset = QtCore.QPoint()
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
@@ -91,6 +91,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.showMaximized()
             self.maximizeButton.setIcon(QtGui.QIcon("./icons/minimize.svg"))
             self.maximizeButton.setToolTip("Restore")
+
+    
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
