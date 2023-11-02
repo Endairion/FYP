@@ -106,7 +106,7 @@ class LoginForm(QtWidgets.QWidget):
 
         if response['success']:
             self.result = (True, response['message'])
-            self.close()
+            print(self.result)
         else:
             self.result = (False, response['message'])
             QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
