@@ -11,6 +11,7 @@ class LoginForm(QtWidgets.QWidget):
         self.node = Peer()
         self.thread = None
         self.startNode()
+        self.login_finished = QtCore.pyqtSignal()
        
 
         # Connect login button to handler function
