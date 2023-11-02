@@ -105,7 +105,7 @@ class LoginForm(QtWidgets.QWidget):
             if response['success']:
                 self.result = (True, response['message'])
                 print(self.result)
-                self.login_finished.emit()
+                QtCore.QMetaObject.invokeMethod(self, "login_finished.emit", QtCore.Qt.QueuedConnection)
                 return
             else:
                 self.result = (False, response['message'])
