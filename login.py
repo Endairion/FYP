@@ -11,7 +11,7 @@ class LoginForm(QtWidgets.QWidget):
         self.node = Peer()
         self.thread = None
         self.startNode()
-        self.login_finished = QtCore.pyqtSignal()
+        self.login_finished = threading.Event()
        
 
         # Connect login button to handler function
@@ -66,7 +66,8 @@ class LoginForm(QtWidgets.QWidget):
 
         thread = threading.Thread(target=self.thread_handler, args=('login',username, password))
         thread.start()
-        self.login_finished.connect(self.open_main_window)
+        self.login_finished.wait()
+        self.open_main_window()
 
     def handle_register(self):
         # Get username and password from input fields
@@ -106,7 +107,7 @@ class LoginForm(QtWidgets.QWidget):
                 self.result = (True, response['message'])
                 print(self.result)
                 QtCore.QMetaObject.invokeMethod(self, "login_finished.emit", QtCore.Qt.QueuedConnection)
-                return
+                self.login_finished.set()
             else:
                 self.result = (False, response['message'])
                 QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
