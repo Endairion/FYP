@@ -98,18 +98,31 @@ class LoginForm(QtWidgets.QWidget):
     def thread_handler(self, type, username, password):
         if type == 'login':
             response = self.node.login(username, password)
+            if response['success']:
+                self.result = (True, response['message'])
+                print(self.result)
+                # Pass the Peer object to main.py
+                import main
+                main.peer = self.node.peer
+            else:
+                self.result = (False, response['message'])
+                QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
+
         elif type == 'register':
             response = self.node.register(username, password)
+            if response['success']:
+                self.result = (True, response['message'])
+                QtWidgets.QMessageBox.information(self, 'Success', response['message'])
+                # Clear the line edits for username and password
+                self.username.clear()
+                self.password.clear()
+            else:
+                self.result = (False, response['message'])
+                QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
+
         else:
             print(f"Unknown request type: {type}")
             return
-
-        if response['success']:
-            self.result = (True, response['message'])
-            print(self.result)
-        else:
-            self.result = (False, response['message'])
-            QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
 
     def startNode(self):
         self.thread = threading.Thread(target=self.node.start, args=())
