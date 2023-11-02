@@ -3,6 +3,19 @@ from peer import Peer
 import threading
 import re
 
+class Worker(QtCore.QThread):
+    finished = QtCore.pyqtSignal()
+
+    def __init__(self, func, *args, **kwargs):
+        super().__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        self.func(*self.args, **self.kwargs)
+        self.finished.emit()
+
 class LoginForm(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -64,10 +77,14 @@ class LoginForm(QtWidgets.QWidget):
         username = self.lineEdit.text()
         password = self.lineEdit_2.text()
 
-        thread = threading.Thread(target=self.thread_handler, args=('login',username, password))
-        thread.start()
-        self.login_finished.wait()
-        self.open_main_window()
+        self.worker = Worker(self.thread_handler, 'login', username, password)
+        self.worker.finished.connect(self.open_main_window)
+        self.worker.start()
+
+        # thread = threading.Thread(target=self.thread_handler, args=('login',username, password))
+        # thread.start()
+        # self.login_finished.wait()
+        # self.open_main_window()
 
     def handle_register(self):
         # Get username and password from input fields
@@ -106,8 +123,6 @@ class LoginForm(QtWidgets.QWidget):
             if response['success']:
                 self.result = (True, response['message'])
                 print(self.result)
-                QtCore.QMetaObject.invokeMethod(self, "login_finished.emit", QtCore.Qt.QueuedConnection)
-                self.login_finished.set()
             else:
                 self.result = (False, response['message'])
                 QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
