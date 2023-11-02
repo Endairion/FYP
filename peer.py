@@ -21,7 +21,7 @@ class Peer(Node):
         while True:
             try:
                 connection, address = self.socket.accept()
-                self.thread = threading.Thread(target=self.handle_connection, args=(connection,))
+                self.thread = threading.Thread(target=self.handle_data, args=(connection,))
                 self.thread.start()
             except OSError:
                 # Socket has been closed or deleted
