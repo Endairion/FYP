@@ -48,6 +48,7 @@ class Peer(Node):
             self.send_message(message, relay_socket)
             # Receive response from relay node
             self.username = username
+            print("Waiting for response")
             response = self.wait_for_response()
             self.disconnect_from_peer(relay_socket)
             return response
