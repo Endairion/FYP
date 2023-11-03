@@ -97,7 +97,6 @@ class Peer(Node):
             if message is None:
                 # Connection closed by peer
                 break
-
             elif message['type'] == 'login':
                 self.thread_event.data = message
                 self.thread_event.set()

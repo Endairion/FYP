@@ -75,11 +75,14 @@ class RelayNode(Node):
                 username = message['username']
 
                 result = self.dht.delete(username)
-                self.send_message(result, peer_socket)
                 if result['success']:
                     print("Logout successful for ", username)
+                    result = {"type": "logout", "success": True, "message": "Logout successful"}
                 else:
                     print(result['message'])
+                    result = {"type": "logout", "success": False, "message": "Logout unsuccessful"}
+
+                self.send_message(result, peer_socket)
 
 
             elif message['type'] == 'data':
