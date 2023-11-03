@@ -76,9 +76,9 @@ class LoginForm(QtWidgets.QWidget):
         username = self.lineEdit.text()
         password = self.lineEdit_2.text()
 
-        self.worker = Worker(self.thread_handler, 'login', username, password)
-        self.worker.finished.connect(self.open_main_window)
-        self.worker.start()
+        self.login_worker = Worker(self.thread_handler, 'login', username, password)
+        self.login_worker.finished.connect(self.open_main_window)
+        self.login_worker.start()
 
         # thread = threading.Thread(target=self.thread_handler, args=('login',username, password))
         # thread.start()
@@ -148,8 +148,8 @@ class LoginForm(QtWidgets.QWidget):
         self.main_window.show()
 
     def startNode(self):
-        self.worker = Worker(self.node.start)
-        self.worker.start()
+        self.node_worker = Worker(self.node.start)
+        self.node_worker.start()
         # self.thread = threading.Thread(target=self.node.start, args=())
         # self.thread.start()
 
