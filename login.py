@@ -167,6 +167,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minimizeButton.clicked.connect(self.showMinimized)
         self.maximizeButton.clicked.connect(self.toggleMaximize)
         self.closeButton.clicked.connect(self.close)
+        self.username.setText(self.node.username)
 
         # Set the initial CSS for the QPushButton
         self.default_css = """
@@ -245,8 +246,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.maximizeButton.setIcon(QtGui.QIcon("./icons/minimize.svg"))
             self.maximizeButton.setToolTip("Restore")
 
-    def showInformation(self):
-        self.username.setText(self.node.username)
+        
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
