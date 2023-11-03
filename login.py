@@ -252,11 +252,9 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
 
     login_form = LoginForm()
-    if login_form.exec_() == QtWidgets.QDialog.Accepted:
-        main_window = MainWindow()
-        main_window.node = login_form.node
-        main_window.show()
-        sys.exit(app.exec_())
+    login_form.show()
+
+    sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()
