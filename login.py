@@ -167,6 +167,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minimizeButton.clicked.connect(self.showMinimized)
         self.maximizeButton.clicked.connect(self.toggleMaximize)
         self.closeButton.clicked.connect(self.close)
+        self.closeButton.clicked.connect(self.close_program)
+        self.logoutButton.clicked.connect(self.logout)
         self.username.setText(self.node.username)
 
         # Set the initial CSS for the QPushButton
@@ -245,6 +247,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.showMaximized()
             self.maximizeButton.setIcon(QtGui.QIcon("./icons/minimize.svg"))
             self.maximizeButton.setToolTip("Restore")
+
+    def close_program(self):
+        # Confirm close
+        reply = QtWidgets.QMessageBox.question(self, 'Confirm Close', 'Are you sure you want to close the program?', QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        if reply == QtWidgets.QMessageBox.Yes:
+            # Send logout request to Relay Node
+            response = self.node.logout()
+            if response['success']:
+                print(response['message'])
+                self.close()
+            else:
+                QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
 
     def logout(self):
         # Confirm logout
