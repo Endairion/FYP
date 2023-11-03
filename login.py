@@ -24,7 +24,6 @@ class LoginForm(QtWidgets.QWidget):
         self.node = Peer()
         self.thread = None
         self.startNode()
-        self.login_finished = threading.Event()
        
 
         # Connect login button to handler function
@@ -149,8 +148,10 @@ class LoginForm(QtWidgets.QWidget):
         self.main_window.show()
 
     def startNode(self):
-        self.thread = threading.Thread(target=self.node.start, args=())
-        self.thread.start()
+        self.worker = Worker(self.node.start)
+        self.worker.start()
+        # self.thread = threading.Thread(target=self.node.start, args=())
+        # self.thread.start()
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
