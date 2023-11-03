@@ -2,6 +2,7 @@ from PyQt5 import uic, QtCore, QtGui, QtWidgets
 from peer import Peer
 import threading
 import re
+import sys
 
 class Worker(QtCore.QThread):
     finished = QtCore.pyqtSignal()
@@ -247,11 +248,15 @@ class MainWindow(QtWidgets.QMainWindow):
     def showInformation(self):
         self.username.setText(self.node.username)
 
+def main():
+    app = QtWidgets.QApplication(sys.argv)
 
+    login_form = LoginForm()
+    if login_form.exec_() == QtWidgets.QDialog.Accepted:
+        main_window = MainWindow()
+        main_window.node = login_form.node
+        main_window.show()
+        sys.exit(app.exec_())
 
 if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    login_form = LoginForm()
-    login_form.show()
-    sys.exit(app.exec_())
+    main()
