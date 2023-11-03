@@ -23,6 +23,9 @@ class DistributedHashTable:
 
     def get(self, key):
         return self.data.get(key)
+    
+    def search(self, key):
+        return key in self.data
 
     def delete(self, key):
         if key in self.data:

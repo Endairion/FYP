@@ -143,7 +143,7 @@ class LoginForm(QtWidgets.QWidget):
             print(f"Unknown request type: {type}")
             return
     def open_main_window(self):
-        self.main_window = MainWindow(self.node)  # Pass the node to MainWindow
+        self.main_window = MainWindow(self.node, self)  # Pass the node to MainWindow
         self.main_window.show()
         self.hide()
 
@@ -154,12 +154,13 @@ class LoginForm(QtWidgets.QWidget):
         # self.thread.start()
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, node):
+    def __init__(self, node, login_form):
         super(MainWindow, self).__init__()
         uic.loadUi('ui_main.ui', self)
         self.node = node
         self.dragging = False
         self.offset = QtCore.QPoint()
+        self.login_form = login_form
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
@@ -244,6 +245,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.showMaximized()
             self.maximizeButton.setIcon(QtGui.QIcon("./icons/minimize.svg"))
             self.maximizeButton.setToolTip("Restore")
+
+    def logout(self):
+        # Confirm logout
+        reply = QtWidgets.QMessageBox.question(self, 'Confirm Logout', 'Are you sure you want to logout?', QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        if reply == QtWidgets.QMessageBox.Yes:
+            # Send logout request to Relay Node
+            response = self.node.logout()
+            if response['success']:
+                print(response['message'])
+                self.close()
+                # Show old login form
+                self.login_form.show()
+            else:
+                QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
 
         
 

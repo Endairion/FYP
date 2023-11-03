@@ -43,7 +43,12 @@ class RelayNode(Node):
                 username = message['username']
                 password = message['password']
 
-                result = self.userCredentials.login(username, password)
+                if self.dht.search(username):
+                    print("Someone is already logged in to the account.")
+                    result = {'success': False, 'message': 'Someone is already logged in to the account.'}
+                else:
+                    result = self.userCredentials.login(username, password)
+
                 self.send_message(result, peer_socket)
                 if result['success']:
                     print("Login successful for", username)

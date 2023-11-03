@@ -50,7 +50,6 @@ class Peer(Node):
             self.username = username
             print("Waiting for response")
             response = self.wait_for_response()
-            self.disconnect_from_peer(relay_socket)
             return response
 
         else:
@@ -73,7 +72,6 @@ class Peer(Node):
             message = {"type": "register", "username": username, "password": password}
             self.send_message(message, relay_socket)
             response = self.wait_for_response()
-            self.disconnect_from_peer(relay_socket)
             return response
         else:
             return {"success": False, "message": "Could not connect to Relay Node."}
@@ -87,7 +85,6 @@ class Peer(Node):
             message = {"type": "logout", "username": self.username}
             self.send_message(message, relay_socket)
             response = self.wait_for_response()
-            self.disconnect_from_peer(relay_socket)
             return response
         else:
             return False
