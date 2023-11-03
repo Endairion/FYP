@@ -298,7 +298,7 @@ QPushButton:pressed {
               <number>0</number>
              </property>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="logout">
                <property name="enabled">
                 <bool>true</bool>
                </property>
