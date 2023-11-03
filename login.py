@@ -143,8 +143,7 @@ class LoginForm(QtWidgets.QWidget):
             print(f"Unknown request type: {type}")
             return
     def open_main_window(self):
-        self.main_window = MainWindow()  # Pass the node to MainWindow
-        self.main_window.node = self.node
+        self.main_window = MainWindow(self.node)  # Pass the node to MainWindow
         self.main_window.show()
         self.hide()
 
@@ -155,10 +154,10 @@ class LoginForm(QtWidgets.QWidget):
         # self.thread.start()
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, node):
         super(MainWindow, self).__init__()
         uic.loadUi('ui_main.ui', self)
-        self.node = None
+        self.node = node
         self.dragging = False
         self.offset = QtCore.QPoint()
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
