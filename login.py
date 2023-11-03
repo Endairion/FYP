@@ -146,7 +146,7 @@ class LoginForm(QtWidgets.QWidget):
         self.main_window = MainWindow()  # Pass the node to MainWindow
         self.main_window.node = self.node
         self.main_window.show()
-        self.exit()
+        self.hide()
 
     def startNode(self):
         self.node_worker = Worker(self.node.start)
