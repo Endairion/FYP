@@ -108,4 +108,5 @@ class Peer(Node):
             
             elif message['type'] == 'logout':
                 # Handle logout response
-                print(message['message'])
+                self.thread_event.data = message
+                self.thread_event.set()
