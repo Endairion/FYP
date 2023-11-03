@@ -142,10 +142,10 @@ class LoginForm(QtWidgets.QWidget):
             print(f"Unknown request type: {type}")
             return
     def open_main_window(self):
-        self.exit()
         self.main_window = MainWindow()  # Pass the node to MainWindow
         self.main_window.node = self.node
         self.main_window.show()
+        self.exit()
 
     def startNode(self):
         self.node_worker = Worker(self.node.start)
