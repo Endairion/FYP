@@ -97,15 +97,14 @@ class Peer(Node):
             if message is None:
                 # Connection closed by peer
                 break
-            elif message['type'] == 'login':
-                self.thread_event.data = message
-                self.thread_event.set()
-
-            elif message['type'] == 'register':
-                self.thread_event.data = message
-                self.thread_event.set()
-            
-            elif message['type'] == 'logout':
-                # Handle logout response
-                self.thread_event.data = message
-                self.thread_event.set()
+            elif 'type' in message:
+                if message['type'] == 'login':
+                    self.thread_event.data = message
+                    self.thread_event.set()
+                elif message['type'] == 'register':
+                    self.thread_event.data = message
+                    self.thread_event.set()
+                elif message['type'] == 'logout':
+                    # Handle logout response
+                    self.thread_event.data = message
+                    self.thread_event.set()
