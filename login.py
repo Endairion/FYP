@@ -78,6 +78,7 @@ class LoginForm(QtWidgets.QWidget):
         password = self.lineEdit_2.text()
 
         self.login_worker = Worker(self.thread_handler, 'login', username, password)
+        self.login_worker.finished.connect(self.clear_line_edits)
         self.login_worker.finished.connect(self.open_main_window)
         self.login_worker.start()
 
@@ -95,6 +96,10 @@ class LoginForm(QtWidgets.QWidget):
             QtWidgets.QMessageBox.warning(self, 'Error', 'Invalid password. Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.')
             return
         
+        self.register_worker = Worker(self.thread_handler, 'register', username, password)
+        self.register_worker.finished.connect(self.clear_line_edits)
+        self.register_worker.start()
+
         #thread = threading.Thread(target=self.thread_handler, args=('register',username, password))
         #thread.start()
 
@@ -147,6 +152,10 @@ class LoginForm(QtWidgets.QWidget):
         self.main_window.show()
         self.hide()
 
+    def clear_line_edits(self):
+        self.lineEdit.clear()
+        self.lineEdit_2.clear()
+
     def startNode(self):
         self.node_worker = Worker(self.node.start)
         self.node_worker.start()
@@ -166,7 +175,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.minimizeButton.clicked.connect(self.showMinimized)
         self.maximizeButton.clicked.connect(self.toggleMaximize)
-        self.closeButton.clicked.connect(self.close)
         self.closeButton.clicked.connect(self.close_program)
         self.logoutButton.clicked.connect(self.logout)
         self.username.setText(self.node.username)
