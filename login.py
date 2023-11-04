@@ -74,8 +74,12 @@ class LoginForm(QtWidgets.QWidget):
 
     def handle_login(self):
         # Get username and password from input fields
-        username = self.lineEdit.text()
-        password = self.lineEdit_2.text()
+        username = self.lineEdit.text().strip()
+        password = self.lineEdit_2.text().strip()
+
+        if not self.validate_inputs(username, password):
+            QtWidgets.QMessageBox.warning(self, 'Error', 'Username or password cannot be empty')
+            return        
 
         self.login_worker = Worker(self.thread_handler, 'login', username, password)
         self.login_worker.finished.connect(self.clear_line_edits)
@@ -89,9 +93,12 @@ class LoginForm(QtWidgets.QWidget):
 
     def handle_register(self):
         # Get username and password from input fields
-        username = self.lineEdit.text()
-        password = self.lineEdit_2.text()
-
+        username = self.lineEdit.text().strip()
+        password = self.lineEdit_2.text().strip()
+        if not self.validate_inputs(username, password):
+            QtWidgets.QMessageBox.warning(self, 'Error', 'Username or password cannot be empty')
+            return
+        
         if not self.validate_password(password):
             QtWidgets.QMessageBox.warning(self, 'Error', 'Invalid password. Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.')
             return
@@ -155,6 +162,11 @@ class LoginForm(QtWidgets.QWidget):
     def clear_line_edits(self):
         self.lineEdit.clear()
         self.lineEdit_2.clear()
+
+    def validate_inputs(self, username, password):
+        if not username or not password:
+            return False
+        return True
 
     def startNode(self):
         self.node_worker = Worker(self.node.start)
