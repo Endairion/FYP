@@ -34,3 +34,21 @@ class DistributedHashTable:
             return {"success": True, "message": f"Key '{key}' deleted successfully."}
         else:
             return {"success": False, "message": f"Key '{key}' not found."}
+        
+    def get_all(self):
+        # Get the values (associated data)
+        associated_data = list(self.data.values())
+
+        return associated_data
+        
+    def get_all_except_sender(self, sender):
+        # Copy the data
+        all_nodes = self.data.copy()
+
+        # Remove the sender from the dictionary
+        all_nodes.pop(sender, None)
+
+        # Get the values (associated data)
+        associated_data = list(all_nodes.values())
+
+        return associated_data

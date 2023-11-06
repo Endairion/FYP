@@ -1,5 +1,13 @@
+import hashlib
 import json
 import threading
+import base64
+import time
+import uuid
+from block import Block
+from blockchain import Blockchain
+from fragment import Fragment
+from metadata import FileMetadata
 from node import Node
 from UserCredential import UserCredentials
 from DHT import DistributedHashTable
@@ -84,11 +92,170 @@ class RelayNode(Node):
 
                 self.send_message(result, peer_socket)
 
+            elif message['type'] == 'upload_start':
+                # Prepare for file upload
+                self.file_size = message['file_size']
+                self.file_name = message['file_name']
+                self.sender = message['username']
+                self.file_data = b''
 
-            elif message['type'] == 'data':
-                # Handle data message
-                print(f"Received message from {connection.getpeername()}: {message['data']}")
+                # Start handling the upload
+                self.handle_upload(connection, peer_socket)
 
-                # Send response back to sending peer
-                response = {"type": "data", "data": "Hello, Peer!"}
-                self.send_message(response, connection)
+            elif message['type'] == 'update_blockchain':
+                self.send_blockchain(peer_socket)
+
+
+
+
+    def handle_upload(self, connection, peer_socket):
+        while len(self.file_data) < self.file_size:
+            # Receive data from client
+            message = self.receive_message(connection)
+
+            if message['type'] == 'upload_chunk':
+                # Append received chunk to file data
+                self.file_data += base64.b64decode(message['file_data'])
+
+        # Check if all chunks have been received
+        if len(self.file_data) == self.file_size:
+            # Send response to client
+            result = {"type": "upload_complete", "success": True, "message": "File upload successful"}
+            self.send_message(result, peer_socket)
+
+            # Process file data for distribution
+            metadata, fragment_data_list = self.fragment_file(self.file_data)
+
+            self.distribute_file(metadata, fragment_data_list)
+
+            self.add_to_blockchain(metadata)
+        else:
+            # Send error response to client
+            result = {"type": "upload_error", "success": False, "message": "File upload unsuccessful, not all chunks received"}
+            self.send_message(result, peer_socket)
+
+        # Reset file data
+        self.file_data = b''
+        self.file_size = 0
+        self.file_name = None
+        self.sender = None
+
+    def fragment_file(self, file_data):
+        file_id = str(uuid.uuid4())
+        num_fragments = 3
+        fragment_size = (len(file_data) + num_fragments - 1) // num_fragments
+        fragment_hashes = []
+        fragment_data_list = []
+        file_hash = hashlib.sha256()
+        for i in range(num_fragments):
+            start = i * fragment_size
+            end = (i + 1) * fragment_size if i != num_fragments - 1 else len(file_data)
+            fragment_data = file_data[start:end]
+            fragment_hash = hashlib.sha256(fragment_data).hexdigest()
+            fragment_hashes.append(fragment_hash)
+            fragment_data_list.append(fragment_data)
+            file_hash.update(fragment_data)
+        fragments = Fragment(fragment_hashes, num_fragments)
+        file_metadata = FileMetadata(file_id, self.file_name, self.file_size, fragments, self.sender, file_hash.hexdigest())
+        return file_metadata, fragment_data_list
+    
+    def distribute_file(self, metadata, fragment_data_list):
+        # Get the list of IPs
+        IPList = self.dht.get_all_except_sender(self.sender)
+
+        # Get the fragment hashes from the metadata
+        fragment_hashes = metadata.fragments.fragment_hashes
+
+        # Distribute the fragments to the IPs
+        for ip, fragment_data, fragment_hash in zip(IPList, fragment_data_list, fragment_hashes):
+            # Send the fragment and its hash to the IP
+            self.send_fragment(ip, fragment_data, fragment_hash)
+
+    def send_fragment(self, ip, fragment_data):
+    # Create a message with the fragment data
+        message = {
+            'type': 'fragment',
+            'fragment_data': base64.b64encode(fragment_data).decode(),
+        }
+
+        peer = self.connect_to_peer(ip)
+
+    # Send the message to the IP
+        self.send_message(message, peer)
+
+
+    def add_to_blockchain(self, metadata):
+        # Load the blockchain from the file
+        self.blockchain = Blockchain.load_from_file('blockchain.pkl')
+
+        # Check if the blockchain is empty or doesn't exist
+        if self.blockchain is None or len(self.blockchain.chain) == 0:
+            # If the blockchain is empty or doesn't exist, create a new blockchain and a genesis block
+            self.blockchain = Blockchain()
+            genesis_block = Blockchain.createGenesisBlock()
+            self.blockchain.addBlock(genesis_block)
+
+        # Convert the metadata to a dictionary
+        metadata_dict = metadata.to_dict()
+
+        timestamp = time.time()
+
+        # Create a new block with the metadata
+        new_block = Block(timestamp, metadata_dict)
+
+        # Add the new block to the blockchain
+        self.blockchain.addBlock(new_block)
+
+        # Save the blockchain to the file
+        self.blockchain.save_to_file('blockchain.pkl')
+
+        # Distribute the blockchain to all online nodes
+        self.distribute_blockchain()
+
+    def distribute_blockchain(self):
+        # Get the list of IPs
+        IPList = self.dht.get_all()
+
+        # Distribute the blockchain to the IPs
+        for ip in IPList:
+            # Send the blockchain to the IP
+            self.send_blockchain(ip)
+
+    def send_blockchain(self, ip):
+        # Create a message with the blockchain data
+        with open('blockchain.pkl', 'rb') as file:
+            blockchain_data = file.read()
+
+        # Convert the binary data to base64
+        blockchain_data_base64 = base64.b64encode(blockchain_data)
+
+        message = {
+            'type': 'blockchain',
+            'blockchain_data': blockchain_data_base64,
+        }
+
+        peer = self.connect_to_peer(ip)
+
+        # Send the message to the IP
+        self.send_message(message, peer)
+
+    def update_blockchain(self, socket):
+        # Create a message with the blockchain data
+        with open('blockchain.pkl', 'rb') as file:
+            blockchain_data = file.read()
+
+        # Convert the binary data to base64
+        blockchain_data_base64 = base64.b64encode(blockchain_data)
+
+        message = {
+            'type': 'blockchain',
+            'blockchain_data': blockchain_data_base64,
+        }
+
+        # Send the message to the IP
+        self.send_message(message, socket)
+
+
+
+    
+

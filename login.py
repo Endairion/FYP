@@ -1,4 +1,5 @@
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
+from blockchain import Blockchain
 from peer import Peer
 import threading
 import re
@@ -294,7 +295,16 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
 
-        
+    def updateBlockchain(self):
+        self.node.update_blockchain()
+
+
+
+    def display_file(self):
+        blockchain = Blockchain.load_from_file('blockchain.pkl')
+
+
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

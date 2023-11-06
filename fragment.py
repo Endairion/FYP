@@ -1,10 +1,10 @@
 class Fragment:
-    def __init__(self, fragment_id, fragment_hash, fragment_size, next_fragment_hash=None, num_fragments=None):
-        self.fragment_id = fragment_id
-        self.fragment_hash = fragment_hash
-        self.fragment_size = fragment_size
-        self.next_fragment_hash = next_fragment_hash
+    def __init__(self, fragment_hashes, num_fragments=None):
+        self.fragment_hashes = fragment_hashes
         self.num_fragments = num_fragments
 
     def __repr__(self):
-        return f"Fragment({self.fragment_id}, {self.fragment_hash}, {self.fragment_size}, {self.next_fragment_hash}, {self.num_fragments})"
+        return f"Fragment({self.fragment_hashes}, {self.num_fragments})"
+
+    def to_dict(self):
+        return {f"Fragment {i+1}": hash for i, hash in enumerate(self.fragment_hashes)}
