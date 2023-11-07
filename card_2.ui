@@ -163,7 +163,7 @@ QLabel {
     </size>
    </property>
   </widget>
-  <widget class="QPushButton" name="downloadButton_2">
+  <widget class="QPushButton" name="deleteButton">
    <property name="geometry">
     <rect>
      <x>480</x>

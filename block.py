@@ -1,5 +1,5 @@
 import hashlib
-from metadata import Metadata
+from metadata import FileMetadata
 
 def SHA256(message):
     return hashlib.sha256(message.encode('utf-8')).hexdigest()
