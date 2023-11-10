@@ -18,7 +18,9 @@ class Worker(QtCore.QThread):
 
     def run(self):
         result = self.func(*self.args, **self.kwargs)
-        if result[0]:  # If the function was successful
+        if result is None:
+            return
+        elif result[0]:  # If the function was successful
             self.successful.emit(result[1])
         else:  # If the function failed
             self.failed.emit(result[1])
