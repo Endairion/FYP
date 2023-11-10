@@ -653,7 +653,7 @@ QPushButton:pressed {
                 </size>
                </property>
                <property name="toolTip">
-                <string>Upload</string>
+                <string>Home</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -666,7 +666,7 @@ QPushButton:pressed {
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="resources.qrc">
+                <iconset>
                  <normaloff>icons/home.svg</normaloff>icons/home.svg</iconset>
                </property>
                <property name="iconSize">
@@ -734,7 +734,7 @@ QPushButton:pressed {
                 </size>
                </property>
                <property name="toolTip">
-                <string>Download</string>
+                <string>My Upload</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -752,7 +752,7 @@ QPushButton:pressed {
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="resources.qrc">
+                <iconset>
                  <normaloff>icons/upload.svg</normaloff>icons/upload.svg</iconset>
                </property>
                <property name="iconSize">
@@ -895,6 +895,9 @@ QPushButton:pressed {
                  </property>
                  <item>
                   <widget class="QScrollArea" name="home">
+                   <property name="toolTip">
+                    <string>Home</string>
+                   </property>
                    <property name="widgetResizable">
                     <bool>true</bool>
                    </property>
@@ -977,8 +980,8 @@ QPushButton:pressed {
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>708</width>
-                      <height>450</height>
+                      <width>98</width>
+                      <height>28</height>
                      </rect>
                     </property>
                    </widget>
