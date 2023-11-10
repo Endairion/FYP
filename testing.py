@@ -31,7 +31,10 @@ class MainWindow(QMainWindow):
 
         # Create a container QWidget and set a layout for it
         scroll_area = self.findChild(QScrollArea, "scrollArea_2")
-        layout = scroll_area.widget().layout()
+        container = scroll_area.findChild(QWidget, "your_widget_name")
+
+        # Get the layout of the QWidget
+        layout = container.layout()
 
         # Hardcoded file information
         file_info_list = [
