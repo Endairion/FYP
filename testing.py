@@ -29,16 +29,41 @@ class MainWindow(QMainWindow):
         # Load the UI file
         uic.loadUi('ui_main.ui', self)
 
+        self.active_css = """
+        QPushButton {
+            border: none;
+            background-color: rgb(91,90,90);
+        }
+        """
+
+        self.default_css = """
+        QPushButton {
+            border: none;
+            background-color: rgba(0,0,0,0);
+        }
+        QPushButton:hover {
+            background-color: rgb(91,90,90);
+        }
+        QPushButton:pressed {    
+            background-color: rgba(0,0,0,0);
+        }
+        """
+
+        self.stackedWidget.setCurrentWidget(self.page_my_upload)
+        self.myUploadButton.setStyleSheet(self.active_css)
+        self.homeButton.setStyleSheet(self.default_css)
+
         # Create a container QWidget and set a layout for it
         scroll_area = self.findChild(QScrollArea, "scrollArea_2")
-        container = scroll_area.findChild(QWidget, "your_widget_name")
+        container = scroll_area.findChild(QWidget, "scrollAreaWidgetContents_3")
 
         # Get the layout of the QWidget
-        layout = container.layout()
+        layout = QVBoxLayout()
+        container.setLayout(layout)
 
         # Hardcoded file information
         file_info_list = [
-            {"file_id": 1, "file_name": "file1.txt", "file_size": "1KB", "sender": "user1"},
+            {"file_id": 1, "file_name": "file.txt", "file_size": "3.76 KB", "sender": "Endairion"},
         ]
 
         for file_info in file_info_list:
@@ -48,16 +73,10 @@ class MainWindow(QMainWindow):
             card.setMinimumSize(550, 100)  # Set a minimum size for the CardWidget instances
             layout.addWidget(card)
 
-        self.active_css = """
-        QPushButton {
-            border: none;
-            background-color: rgb(91,90,90);
-        }
-        """
+
 
         # Set the container QWidget as the widget of the QScrollArea
-        self.home.setWidget(self.page_my_upload)
-        self.homeButton.setStyleSheet(self.active_css)
+
 
         
 
