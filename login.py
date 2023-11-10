@@ -153,8 +153,7 @@ class LoginForm(QtWidgets.QWidget):
                 self.result = (True, response['message'])
                 QtWidgets.QMessageBox.information(self, 'Success', response['message'])
                 # Clear the line edits for username and password
-                self.username.clear()
-                self.password.clear()
+                self.clear_line_edits
             else:
                 self.result = (False, response['message'])
                 QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
