@@ -214,9 +214,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create a dictionary to map buttons to pages
         self.button_page_map = {
-            self.uploadButton: self.page_upload,
-            self.downloadButton: self.page_download,
-            self.deleteButton: self.page_delete
+            self.myUploadButton: self.frame_my_upload,
+            self.homeButton: self.frame_home,
         }
 
         # Connect the buttons to the activate_page method
@@ -224,8 +223,8 @@ class MainWindow(QtWidgets.QMainWindow):
             button.setStyleSheet(self.default_css)
             button.clicked.connect(self.activate_page)
 
-        self.uploadButton.setStyleSheet(self.active_css)
-        self.stackedWidget.setCurrentWidget(self.page_upload)
+        self.homeButton.setStyleSheet(self.active_css)
+        self.stackedWidget.setCurrentWidget(self.frame_home)
 
     def reset_button_styles(self):
         # Reset the style of all buttons
