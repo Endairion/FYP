@@ -1,1 +1,0 @@
-if login fail main window will still open
