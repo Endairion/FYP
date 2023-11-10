@@ -13,19 +13,19 @@ class Block:
         self.nonce = 0
         self.hash = self.getHash()
 
-    def getHash(self):
-        data_string = ''.join(str(metadata) for metadata in self.data)
-        return SHA256(
-            data_string + str(self.timestamp) + str(self.lastHash) + str(self.nonce)
-        )
-
     def mineBlock(self, difficulty):
         while self.hash[:difficulty] != '0' * difficulty:
             self.nonce += 1
             self.hash = self.getHash()
 
+    def getHash(self):
+        data_string = str(self.data)  # treat self.data as an object, not a list
+        return SHA256(
+            data_string + str(self.timestamp) + str(self.lastHash) + str(self.nonce)
+        )
+
     def __str__(self):
-        data_string = '\n'.join(str(metadata) for metadata in self.data)
+        data_string = str(self.data)  # treat self.data as an object, not a list
         return (
             f"Block {self.index}:\n"
             f"Timestamp: {self.timestamp}\n"

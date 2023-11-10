@@ -105,7 +105,41 @@ class RelayNode(Node):
             elif message['type'] == 'update_blockchain':
                 self.send_blockchain(peer_socket)
 
+            elif message['type'] == 'download':
+                file_data, file_metadata = self.assemble_file(message['file_id'])
 
+                filename = file_metadata.filename
+                file_size = file_metadata.file_size
+                # Send the file data to the client
+                self.upload(file_data, filename, file_size, peer_socket)
+
+    def upload(self, file_data, filename, file_size, peer_socket):
+        initial_message = {"type": "upload_start", "filename": filename, "file_size": file_size}
+        self.send_message(initial_message, peer_socket)
+
+        if peer_socket is not None:
+            # Get file size
+            initial_message = {"type": "upload_start", "file_size": file_size, "file_name": filename}
+            start = 0
+            chunk_size = 1024  # Size of each chunk in bytes
+            while start < len(file_data):
+                # Get the next chunk of file data
+                chunk = file_data[start : start + chunk_size]
+
+                # Convert file chunk to base64 string
+                chunk_b64 = base64.b64encode(chunk).decode()
+
+                # Send upload message to peer with file data chunk
+                message = {"type": "upload_chunk", "file_data": chunk_b64}
+                self.send_message(message, peer_socket)
+
+                # Move to the next chunk
+                start += chunk_size
+
+            response = self.wait_for_response()
+            return response
+        else:
+            return {"success": False, "message": "Could not connect to Peer Node."}
 
 
     def handle_upload(self, connection, peer_socket):
@@ -139,6 +173,47 @@ class RelayNode(Node):
         self.file_size = 0
         self.file_name = None
         self.sender = None
+
+    def assemble_file(self, file_id):
+        # Load the blockchain
+        blockchain = Blockchain.load_from_file('blockchain.pkl')
+
+        file_list = blockchain.extract_file_info()
+
+        # Find the FileMetadata with the given file_id
+        for file_metadata in file_list:
+            if file_metadata.file_id == file_id:
+                break
+        else:
+            raise ValueError(f"No FileMetadata found with file_id {file_id}")
+
+        # Get the list of all nodes except the sender
+        fragment_hashes = file_metadata.fragment_hashes
+        sender = file_metadata.sender
+        nodes = self.dht.get_all_except_sender(sender)
+
+        # Retrieve the fragments from the nodes
+        fragments = []
+        for node in nodes:
+            for fragment_hash in fragment_hashes:
+                # Send a request message to the node with the fragment hash
+                self.send_request(node, fragment_hash)
+
+                # Receive the fragment from the node
+                fragment = self.receive_fragment(node)
+
+                # If the fragment is found, add it to the fragments list and break the loop
+                if fragment is not None:
+                    fragments.append(fragment)
+                    break
+
+        # Assemble the fragments in the order of their hashes in fragment_hashes
+        fragments = sorted(fragments, key=lambda fragment: fragment_hashes.index(fragment.hash))
+
+        # Join the fragments to get the file data
+        file_data = b''.join(fragment.data for fragment in fragments)
+
+        return file_data, file_metadata
 
     def fragment_file(self, file_data):
         file_id = str(uuid.uuid4())
