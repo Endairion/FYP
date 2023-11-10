@@ -19,9 +19,9 @@ class Worker(QtCore.QThread):
     def run(self):
         result = self.func(*self.args, **self.kwargs)
         if result[0]:  # If the function was successful
-            self.successful.emit(self.result[1])
+            self.successful.emit(result[1])
         else:  # If the function failed
-            self.failed.emit(self.result[1])
+            self.failed.emit(result[1])
         self.finished.emit()
 
 class LoginForm(QtWidgets.QWidget):
