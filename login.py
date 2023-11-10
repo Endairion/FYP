@@ -118,7 +118,6 @@ class LoginForm(QtWidgets.QWidget):
         #thread.start()
     def show_register_successful(self, message):
         QtWidgets.QMessageBox.information(self, 'Success', message)
-        
     def show_login_error(self, message):
         QtWidgets.QMessageBox.warning(self, 'Error', message)
 
@@ -222,8 +221,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create a dictionary to map buttons to pages
         self.button_page_map = {
-            self.myUploadButton: self.frame_my_upload,
-            self.homeButton: self.frame_home,
+            self.myUploadButton: self.page_my_upload,
+            self.homeButton: self.page_home,
         }
 
         # Connect the buttons to the activate_page method
@@ -232,7 +231,7 @@ class MainWindow(QtWidgets.QMainWindow):
             button.clicked.connect(self.activate_page)
 
         self.homeButton.setStyleSheet(self.active_css)
-        self.stackedWidget.setCurrentWidget(self.frame_home)
+        self.stackedWidget.setCurrentWidget(self.page_home)
 
     def reset_button_styles(self):
         # Reset the style of all buttons
