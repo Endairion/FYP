@@ -37,15 +37,6 @@ class MainWindow(QMainWindow):
         # Hardcoded file information
         file_info_list = [
             {"file_id": 1, "file_name": "file1.txt", "file_size": "1KB", "sender": "user1"},
-            {"file_id": 2, "file_name": "file2.txt", "file_size": "2KB", "sender": "user2"},
-            {"file_id": 3, "file_name": "file3.txt", "file_size": "3KB", "sender": "user3"},
-            {"file_id": 4, "file_name": "file4.txt", "file_size": "4KB", "sender": "user4"},
-            {"file_id": 5, "file_name": "file5.txt", "file_size": "5KB", "sender": "user5"},
-            {"file_id": 5, "file_name": "file5.txt", "file_size": "5KB", "sender": "user5"},
-            {"file_id": 5, "file_name": "file5.txt", "file_size": "5KB", "sender": "user5"},
-            {"file_id": 5, "file_name": "file5.txt", "file_size": "5KB", "sender": "user5"},
-            {"file_id": 5, "file_name": "file5.txt", "file_size": "5KB", "sender": "user5"},
-            {"file_id": 5, "file_name": "file5.txt", "file_size": "5KB", "sender": "user5"},
         ]
 
         for file_info in file_info_list:
