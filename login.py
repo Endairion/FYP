@@ -17,8 +17,8 @@ class Worker(QtCore.QThread):
         self.kwargs = kwargs
 
     def run(self):
-        self.func(*self.args, **self.kwargs)
-        if self.result[0]:  # If the function was successful
+        result = self.func(*self.args, **self.kwargs)
+        if result[0]:  # If the function was successful
             self.successful.emit(self.result[1])
         else:  # If the function failed
             self.failed.emit(self.result[1])
@@ -142,10 +142,10 @@ class LoginForm(QtWidgets.QWidget):
             response = self.node.login(username, password)
             if response['success']:
                 self.result = (True, response['message'])
-                print(self.result)
+                return self.result
             else:
                 self.result = (False, response['message'])
-                QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
+                return self.result
 
         elif type == 'register':
             response = self.node.register(username, password)
