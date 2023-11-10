@@ -30,9 +30,8 @@ class MainWindow(QMainWindow):
         uic.loadUi('ui_main.ui', self)
 
         # Create a container QWidget and set a layout for it
-        container = QWidget()
-        layout = QVBoxLayout()
-        container.setLayout(layout)
+        scroll_area = window.findChild(QScrollArea, "scrollArea_2")
+        layout = scroll_area.widget().layout()
 
         # Hardcoded file information
         file_info_list = [
@@ -46,8 +45,18 @@ class MainWindow(QMainWindow):
             card.setMinimumSize(550, 100)  # Set a minimum size for the CardWidget instances
             layout.addWidget(card)
 
+        self.active_css = """
+        QPushButton {
+            border: none;
+            background-color: rgb(91,90,90);
+        }
+        """
+
         # Set the container QWidget as the widget of the QScrollArea
-        self.home.setWidget(container)
+        self.home.setWidget(self.page_my_upload)
+        self.homeButton.setStyleSheet(self.active_css)
+
+        
 
 if __name__ == "__main__":
     app = QApplication([])
