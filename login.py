@@ -7,6 +7,8 @@ import sys
 
 class Worker(QtCore.QThread):
     finished = QtCore.pyqtSignal()
+    successful = QtCore.pyqtSignal(str)
+    failed = QtCore.pyqtSignal(str)
 
     def __init__(self, func, *args, **kwargs):
         super().__init__()
@@ -16,6 +18,10 @@ class Worker(QtCore.QThread):
 
     def run(self):
         self.func(*self.args, **self.kwargs)
+        if self.result[0]:  # If the function was successful
+            self.successful.emit(self.result[1])
+        else:  # If the function failed
+            self.failed.emit(self.result[1])
         self.finished.emit()
 
 class LoginForm(QtWidgets.QWidget):
@@ -84,13 +90,11 @@ class LoginForm(QtWidgets.QWidget):
 
         self.login_worker = Worker(self.thread_handler, 'login', username, password)
         self.login_worker.finished.connect(self.clear_line_edits)
-        self.login_worker.finished.connect(self.open_main_window)
+        self.login_worker.successful.connect(self.open_main_window)
+        self.login_worker.failed.connect(self.show_login_error)
         self.login_worker.start()
 
-        # thread = threading.Thread(target=self.thread_handler, args=('login',username, password))
-        # thread.start()
-        # self.login_finished.wait()
-        # self.open_main_window()
+
 
     def handle_register(self):
         # Get username and password from input fields
@@ -110,6 +114,9 @@ class LoginForm(QtWidgets.QWidget):
 
         #thread = threading.Thread(target=self.thread_handler, args=('register',username, password))
         #thread.start()
+
+    def show_login_error(self, message):
+        QtWidgets.QMessageBox.warning(self, 'Error', message)
 
     def validate_password(self, password):
         # Check password length
