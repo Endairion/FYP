@@ -110,11 +110,15 @@ class LoginForm(QtWidgets.QWidget):
         
         self.register_worker = Worker(self.thread_handler, 'register', username, password)
         self.register_worker.finished.connect(self.clear_line_edits)
+        self.register_worker.successful.connect(self.show_register_successful)
+        self.register_worker.failed.connect(self.show_login_error)
         self.register_worker.start()
 
         #thread = threading.Thread(target=self.thread_handler, args=('register',username, password))
         #thread.start()
-
+    def show_register_successful(self, message):
+        QtWidgets.QMessageBox.information(self, 'Success', message)
+        
     def show_login_error(self, message):
         QtWidgets.QMessageBox.warning(self, 'Error', message)
 
@@ -151,11 +155,10 @@ class LoginForm(QtWidgets.QWidget):
             response = self.node.register(username, password)
             if response['success']:
                 self.result = (True, response['message'])
-                QtWidgets.QMessageBox.information(self, 'Success', response['message'])
-
+                return self.result
             else:
                 self.result = (False, response['message'])
-                QtWidgets.QMessageBox.warning(self, 'Error', response['message'])
+                return self.result
 
         else:
             print(f"Unknown request type: {type}")
