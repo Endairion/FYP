@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         uic.loadUi('ui_main.ui', self)
 
         # Create a container QWidget and set a layout for it
-        scroll_area = window.findChild(QScrollArea, "scrollArea_2")
+        scroll_area = self.findChild(QScrollArea, "scrollArea_2")
         layout = scroll_area.widget().layout()
 
         # Hardcoded file information
