@@ -18,6 +18,7 @@ class RelayNode(Node):
         self.users = {}
         self.userCredentials = UserCredentials()
         self.dht = DistributedHashTable()
+        self.thread_event = threading.Event()
 
     def start(self):
         # Bind the socket to the node's IP address and port number
@@ -35,6 +36,13 @@ class RelayNode(Node):
             connection_thread.start()
             connection_thread.join()
 
+    def wait_for_response(self):
+        # Wait for a response message from the relay node
+        self.thread_event.clear()
+        self.thread_event.wait()
+        response = self.thread_event.data
+
+        return response
     def handle_data(self, connection):
         # Receive and handle messages from connected peer
         while True:
@@ -143,6 +151,25 @@ class RelayNode(Node):
 
 
     def handle_upload(self, connection, peer_socket):
+        confirmation = {"type": "upload_start_confirmation", "success": True}
+        self.send_message(confirmation, peer_socket)
+        
+        while True:
+            # Receive data from client
+            message = self.receive_message(connection)
+
+            if message['type'] == 'upload_chunk':
+                # Append received chunk to file data
+                self.file_data += base64.b64decode(message['file_data'])
+                break
+            elif message['type'] == 'upload_end':
+                # If the upload has ended, break the loop
+                break
+            else:
+                # If the message type is not 'upload_chunk' or 'upload_end', continue waiting
+                continue
+
+        # Continue receiving the rest of the file data
         while len(self.file_data) < self.file_size:
             # Receive data from client
             message = self.receive_message(connection)

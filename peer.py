@@ -172,6 +172,10 @@ class Peer(Node):
             initial_message = {"type": "upload_start", "username": self.username, "file_size": file_size, "file_name": file_name}
             self.send_message(initial_message, relay_socket)
 
+            confirmation = self.wait_for_response()
+            if not confirmation.get('success'):
+                return {"success": False, "message": "Failed to start upload."}
+
             # Open file
             with open(file_path, 'rb') as file:
                 while True:
