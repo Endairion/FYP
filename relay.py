@@ -113,7 +113,7 @@ class RelayNode(Node):
 
                 # Start handling the upload
                 self.handle_upload(connection, peer_socket)
-                print("Started handling the upload.")
+
 
             elif message['type'] == 'update_blockchain':
                 self.send_blockchain(peer_socket)
@@ -156,7 +156,8 @@ class RelayNode(Node):
 
 
     def handle_upload(self, connection, peer_socket):
-        confirmation = {"type": "upload_start_confirmation", "success": True}
+        print("Started handling the upload.")
+        confirmation = {"success": True}
         self.send_message(confirmation, peer_socket)
         
         while True:
