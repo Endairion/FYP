@@ -125,6 +125,15 @@ class RelayNode(Node):
                 file_size = file_metadata.file_size
                 # Send the file data to the client
                 self.upload(file_data, filename, file_size, peer_socket)
+            elif message['type'] == 'upload_chunk':
+                self.receive_chunks(message)
+            elif message['type'] == 'upload_end':
+                metadata, fragment_data_list = self.fragment_file(self.file_data)
+                print("Fragmented file data.")
+                print("Metadata:", metadata)
+                print("Fragment data list:", fragment_data_list)
+
+            
 
     def upload(self, file_data, filename, file_size, peer_socket):
         initial_message = {"type": "upload_start", "filename": filename, "file_size": file_size}
@@ -154,40 +163,10 @@ class RelayNode(Node):
         else:
             return {"success": False, "message": "Could not connect to Peer Node."}
 
-
-    def handle_upload(self, connection, peer_socket):
-        print("Started handling the upload.")
-        confirmation = {"type": "upload_start_confirmation","success": True}
-        self.send_message(confirmation, peer_socket)
-        print("Sent confirmation to client.")
-        
-        while True:
-            # Receive data from client
-            message = self.receive_message(connection)
-
-            # Check if message is None
-            if message is None:
-                print("Error: Received message is None.")
-                continue
-
-            if message['type'] == 'upload_chunk':
-                # Append received chunk to file data
-                self.file_data += base64.b64decode(message['file_data'])
-                print("Received file chunk, current file data length:", len(self.file_data))
-                break
-            elif message['type'] == 'upload_end':
-                # If the upload has ended, break the loop
-                break
-            else:
-                # If the message type is not 'upload_chunk' or 'upload_end', continue waiting
-                continue
-
-        # Continue receiving the rest of the file data
+    def receive_chunks(self, message):
         while len(self.file_data) < self.file_size:
             print("Waiting for more file data...")
 
-            # Receive data from client
-            message = self.receive_message(connection)
             print("Received message:", message)
 
             if message['type'] == 'upload_chunk':
@@ -195,38 +174,45 @@ class RelayNode(Node):
                 self.file_data += base64.b64decode(message['file_data'])
                 print("Received file chunk, current file data length:", len(self.file_data))
 
-        # Check if all chunks have been received
-        if len(self.file_data) == self.file_size:
-            print("All file chunks received.")
+    def handle_upload(self, connection, peer_socket):
+        print("Started handling the upload.")
+        confirmation = {"type": "upload_start_confirmation","success": True}
+        self.send_message(confirmation, peer_socket)
+        print("Sent confirmation to client.")
+    
 
-            # Send response to client
-            result = {"type": "upload_complete", "success": True, "message": "File upload successful"}
-            self.send_message(result, peer_socket)
-            print("Sent upload complete message to client.")
+        # # Check if all chunks have been received
+        # if len(self.file_data) == self.file_size:
+        #     print("All file chunks received.")
 
-            # Process file data for distribution
-            metadata, fragment_data_list = self.fragment_file(self.file_data)
-            print("Fragmented file data.")
+        #     # Send response to client
+        #     result = {"type": "upload_complete", "success": True, "message": "File upload successful"}
+        #     self.send_message(result, peer_socket)
+        #     print("Sent upload complete message to client.")
 
-            self.distribute_file(metadata, fragment_data_list)
-            print("Distributed file fragments.")
+        #     # Process file data for distribution
+        #     metadata, fragment_data_list = self.fragment_file(self.file_data)
+        #     print("Fragmented file data.")
 
-            self.add_to_blockchain(metadata)
-            print("Added file metadata to blockchain.")
-        else:
-            print("Not all file chunks received.")
+        #     self.distribute_file(metadata, fragment_data_list)
+        #     print("Distributed file fragments.")
 
-            # Send error response to client
-            result = {"type": "upload_error", "success": False, "message": "File upload unsuccessful, not all chunks received"}
-            self.send_message(result, peer_socket)
-            print("Sent upload error message to client.")
+        #     self.add_to_blockchain(metadata)
+        #     print("Added file metadata to blockchain.")
+        # else:
+        #     print("Not all file chunks received.")
 
-        # Reset file data
-        self.file_data = b''
-        self.file_size = 0
-        self.file_name = None
-        self.sender = None
-        print("Reset file data.")
+        #     # Send error response to client
+        #     result = {"type": "upload_error", "success": False, "message": "File upload unsuccessful, not all chunks received"}
+        #     self.send_message(result, peer_socket)
+        #     print("Sent upload error message to client.")
+
+        # # Reset file data
+        # self.file_data = b''
+        # self.file_size = 0
+        # self.file_name = None
+        # self.sender = None
+        # print("Reset file data.")
 
     def assemble_file(self, file_id):
         # Load the blockchain
