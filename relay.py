@@ -107,8 +107,12 @@ class RelayNode(Node):
                 self.sender = message['username']
                 self.file_data = b''
 
+                print("Received 'upload_start' message from peer:", message)
+                print("Prepared for file upload. File size:", self.file_size, "File name:", self.file_name, "Sender:", self.sender)
+
                 # Start handling the upload
                 self.handle_upload(connection, peer_socket)
+                print("Started handling the upload.")
 
             elif message['type'] == 'update_blockchain':
                 self.send_blockchain(peer_socket)
