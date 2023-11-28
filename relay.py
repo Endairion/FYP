@@ -168,6 +168,7 @@ class RelayNode(Node):
             if message['type'] == 'upload_chunk':
                 # Append received chunk to file data
                 self.file_data += base64.b64decode(message['file_data'])
+                print("Received file chunk, current file data length:", len(self.file_data))
                 break
             elif message['type'] == 'upload_end':
                 # If the upload has ended, break the loop
