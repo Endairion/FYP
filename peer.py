@@ -194,7 +194,7 @@ class Peer(Node):
                 file_data = file.read()
 
             # Split the file data into chunks
-            chunks = [file_data[i:i+1024] for i in range(0, len(file_data), 1024)]
+            chunks = [file_data[i:i+256] for i in range(0, len(file_data), 256)]
 
             # Send each chunk to the relay node
             for i, chunk in enumerate(chunks):
