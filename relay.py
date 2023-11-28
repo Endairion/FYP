@@ -165,6 +165,11 @@ class RelayNode(Node):
             # Receive data from client
             message = self.receive_message(connection)
 
+            # Check if message is None
+            if message is None:
+                print("Error: Received message is None.")
+                continue
+
             if message['type'] == 'upload_chunk':
                 # Append received chunk to file data
                 self.file_data += base64.b64decode(message['file_data'])
