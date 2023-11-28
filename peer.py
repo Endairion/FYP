@@ -168,30 +168,34 @@ class Peer(Node):
             # Get file size
             file_size = os.path.getsize(file_path)
             file_name = os.path.basename(file_path)
+
             # Send initial message to relay node
             initial_message = {"type": "upload_start", "username": self.username, "file_size": file_size, "file_name": file_name}
             self.send_message(initial_message, relay_socket)
+            print("Sent initial upload message to relay node:", initial_message)
 
+            # Wait for confirmation from relay node
             confirmation = self.wait_for_response()
+            print("Received confirmation from relay node:", confirmation)
+
             if not confirmation.get('success'):
+                print("Failed to start upload.")
                 return {"success": False, "message": "Failed to start upload."}
 
-            # Open file
+            # Open the file and read its data
             with open(file_path, 'rb') as file:
-                while True:
-                    # Read file chunk
-                    file_data = file.read(1024)  # Read in chunks of 1024 bytes
-                    if not file_data:
-                        break
+                file_data = file.read()
 
-                    # Convert file chunk to base64 string
-                    file_data_b64 = base64.b64encode(file_data).decode()
+            # Split the file data into chunks
+            chunks = [file_data[i:i+1024] for i in range(0, len(file_data), 1024)]
 
-                    # Send upload message to relay node
-                    message = {"type": "upload_chunk", "username": self.username, "file_data": file_data_b64}
-                    self.send_message(message, relay_socket)
+            # Send each chunk to the relay node
+            for i, chunk in enumerate(chunks):
+                chunk_message = {"type": "upload_chunk", "file_data": base64.b64encode(chunk).decode()}
+                self.send_message(chunk_message, relay_socket)
+                print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
 
-            response = self.wait_for_response()
-            return response
-        else:
-            return {"success": False, "message": "Could not connect to Relay Node."}
+            # Send an 'upload_end' message to the relay node
+            end_message = {"type": "upload_end"}
+            self.send_message(end_message, relay_socket)
+            print("Sent 'upload_end' message to relay node.")
