@@ -4,6 +4,7 @@ class Node:
     def __init__(self):
         self.ip = None
         self.port = 8888
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
 
     def connect_to_peer(self, peer_ip):
         try:
