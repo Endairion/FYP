@@ -157,8 +157,9 @@ class RelayNode(Node):
 
     def handle_upload(self, connection, peer_socket):
         print("Started handling the upload.")
-        confirmation = {"success": True}
+        confirmation = {"type": "upload_start_confirmation","success": True}
         self.send_message(confirmation, peer_socket)
+        print("Sent confirmation to client.")
         
         while True:
             # Receive data from client

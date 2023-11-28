@@ -119,6 +119,9 @@ class Peer(Node):
                 elif message['type'] == 'update_blockchain':
                     self.thread_event.data = message
                     self.thread_event.set()
+                elif message['type'] == 'upload_start_confirmation':
+                    self.thread_event.data = message
+                    self.thread_event.set()
                 
             
 
