@@ -32,6 +32,7 @@ class RelayNode(Node):
             print(f"Received connection from {client_address[0]}:{client_address[1]}")
 
             # Start a thread to handle the connection
+            print("Starting thread to handle connection.")
             connection_thread = threading.Thread(target=self.handle_data, args=(client_socket,))
             connection_thread.start()
             connection_thread.join()
@@ -113,7 +114,6 @@ class RelayNode(Node):
 
                 # Start handling the upload
                 self.handle_upload(connection, peer_socket)
-
 
             elif message['type'] == 'update_blockchain':
                 self.send_blockchain(peer_socket)
