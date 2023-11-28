@@ -200,6 +200,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.closeButton.clicked.connect(self.close_program)
         self.logoutButton.clicked.connect(self.logout)
         self.username.setText(self.node.username)
+        self.uploadButton.clicked.connect(self.upload_file)
 
         # Set the initial CSS for the QPushButton
         self.default_css = """
@@ -234,6 +235,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.homeButton.setStyleSheet(self.active_css)
         self.stackedWidget.setCurrentWidget(self.page_home)
+
+    def upload_file(self):
+        file_path, _ = QtWidgets.QFileDialog.getOpenFileName()
+
+        self.node.upload(file_path)
 
     def reset_button_styles(self):
         # Reset the style of all buttons
