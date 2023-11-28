@@ -49,6 +49,7 @@ class RelayNode(Node):
             message = self.receive_message(connection)
             ip = connection.getpeername()[0]
             peer_socket = self.connect_to_peer(ip)
+            print("Received message:", message)
 
             if message is None:
                 # Connection closed by peer

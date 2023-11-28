@@ -175,6 +175,7 @@ class Peer(Node):
             print("Sent initial upload message to relay node:", initial_message)
 
             # Wait for confirmation from relay node
+            print("Waiting for confirmation from relay node...")
             confirmation = self.wait_for_response()
             print("Received confirmation from relay node:", confirmation)
 
