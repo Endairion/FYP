@@ -171,35 +171,49 @@ class RelayNode(Node):
 
         # Continue receiving the rest of the file data
         while len(self.file_data) < self.file_size:
+            print("Waiting for more file data...")
+
             # Receive data from client
             message = self.receive_message(connection)
+            print("Received message:", message)
 
             if message['type'] == 'upload_chunk':
                 # Append received chunk to file data
                 self.file_data += base64.b64decode(message['file_data'])
+                print("Received file chunk, current file data length:", len(self.file_data))
 
         # Check if all chunks have been received
         if len(self.file_data) == self.file_size:
+            print("All file chunks received.")
+
             # Send response to client
             result = {"type": "upload_complete", "success": True, "message": "File upload successful"}
             self.send_message(result, peer_socket)
+            print("Sent upload complete message to client.")
 
             # Process file data for distribution
             metadata, fragment_data_list = self.fragment_file(self.file_data)
+            print("Fragmented file data.")
 
             self.distribute_file(metadata, fragment_data_list)
+            print("Distributed file fragments.")
 
             self.add_to_blockchain(metadata)
+            print("Added file metadata to blockchain.")
         else:
+            print("Not all file chunks received.")
+
             # Send error response to client
             result = {"type": "upload_error", "success": False, "message": "File upload unsuccessful, not all chunks received"}
             self.send_message(result, peer_socket)
+            print("Sent upload error message to client.")
 
         # Reset file data
         self.file_data = b''
         self.file_size = 0
         self.file_name = None
         self.sender = None
+        print("Reset file data.")
 
     def assemble_file(self, file_id):
         # Load the blockchain
