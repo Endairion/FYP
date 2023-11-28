@@ -4,11 +4,6 @@ from peer import Peer
 from login import LoginForm
 from PyQt5.QtWidgets import QApplication
 
-def start_node(node):
-    node.start()
-
-
-    
 
 if __name__ == "__main__":
 
