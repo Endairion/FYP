@@ -164,11 +164,9 @@ class RelayNode(Node):
             return {"success": False, "message": "Could not connect to Peer Node."}
 
     def receive_chunks(self, message, peer_socket):
-        while len(self.file_data) < self.file_size:
             print("Waiting for more file data...")
-
             print("Received message:", message)
-
+            
             if message['type'] == 'upload_chunk':
                 # Append received chunk to file data
                 self.file_data += base64.b64decode(message['file_data'])

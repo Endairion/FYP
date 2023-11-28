@@ -199,8 +199,7 @@ class Peer(Node):
             # Send each chunk to the relay node
             for i, chunk in enumerate(chunks):
                 base64_string = base64.b64encode(chunk).decode()
-                print(f"Chunk {i+1} data:", chunk)
-                print(f"Chunk {i+1} base64 string:", base64_string)
+                print(f"Sending chunk {i+1} of {len(chunks)} (size: {len(chunk)} bytes)")
 
                 chunk_message = {"type": "upload_chunk", "file_data": base64_string}
                 self.send_message(chunk_message, relay_socket)
