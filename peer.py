@@ -122,6 +122,9 @@ class Peer(Node):
                 elif message['type'] == 'upload_start_confirmation':
                     self.thread_event.data = message
                     self.thread_event.set()
+                elif message['type'] == 'chunk_received':
+                    self.thread_event.data = message
+                    self.thread_event.set()
                 
             
 
@@ -198,6 +201,9 @@ class Peer(Node):
                 chunk_message = {"type": "upload_chunk", "file_data": base64.b64encode(chunk).decode()}
                 self.send_message(chunk_message, relay_socket)
                 print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
+                received = self.wait_for_response()
+                if received is not None:
+                    continue
 
             # Send an 'upload_end' message to the relay node
             end_message = {"type": "upload_end"}

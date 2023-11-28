@@ -126,7 +126,7 @@ class RelayNode(Node):
                 # Send the file data to the client
                 self.upload(file_data, filename, file_size, peer_socket)
             elif message['type'] == 'upload_chunk':
-                self.receive_chunks(message)
+                self.receive_chunks(message, peer_socket)
             elif message['type'] == 'upload_end':
                 metadata, fragment_data_list = self.fragment_file(self.file_data)
                 print("Fragmented file data.")
@@ -163,7 +163,7 @@ class RelayNode(Node):
         else:
             return {"success": False, "message": "Could not connect to Peer Node."}
 
-    def receive_chunks(self, message):
+    def receive_chunks(self, message, peer_socket):
         while len(self.file_data) < self.file_size:
             print("Waiting for more file data...")
 
@@ -173,6 +173,7 @@ class RelayNode(Node):
                 # Append received chunk to file data
                 self.file_data += base64.b64decode(message['file_data'])
                 print("Received file chunk, current file data length:", len(self.file_data))
+                self.send_message({"success": True}, peer_socket)
 
     def handle_upload(self, connection, peer_socket):
         print("Started handling the upload.")
