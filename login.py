@@ -33,7 +33,6 @@ class LoginForm(QtWidgets.QWidget):
         self.result = None
         self.node = Peer()
         self.thread = None
-        self.startNode()
        
 
         # Connect login button to handler function
