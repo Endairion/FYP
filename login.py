@@ -365,7 +365,7 @@ class MainWindow(QtWidgets.QMainWindow):
         formatted_file_info_list = []
         for i, block in enumerate(blocks):
             # Deserialize the file information from the block's data
-            file_info = pickle.loads(block.data)
+            file_info = block.data
 
             formatted_file_info = {
                 "file_id": file_info.file_id,
