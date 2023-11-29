@@ -334,17 +334,17 @@ class Peer(Node):
 
     def receive_download(self, message, connection):
         # Decode the base64 data back into binary data
-        self.chunks += base64.b64decode(message['chunk_data'])
+        self.chunks += base64.b64decode(message['file_data'])
         print(f"Received download chunk, current file data length: {len(self.chunks)}")
+
         time.sleep(1)
         ip = connection.getpeername()[0]
         peer_socket = self.connect_to_peer(ip)
 
         # Create a confirmation message
         confirmation_message = {
-            'type': 'donwload_chunk_received',
+            'type': 'download_chunk_received',
         }
-
         # Send the confirmation message back to the sender
         self.send_message(confirmation_message, peer_socket)
         print(f"Sent confirmation to {ip} for received chunk.")

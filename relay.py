@@ -161,6 +161,10 @@ class RelayNode(Node):
                 else:
                     self.file_name = self.assemble_file()
                     self.upload(self.file_name)
+            elif message['type'] == 'download_chunk_received':
+                self.thread_event.data = message
+                self.thread_event.set()
+            
 
                 
 
