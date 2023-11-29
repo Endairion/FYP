@@ -28,7 +28,7 @@ class Block:
         return {
             'index': self.index,
             'timestamp': self.timestamp,
-            'data': self.data.to_dict() if hasattr(self.data, 'to_dict') else self.data,
+            'data': self.data,
             'lastHash': self.lastHash,
             'nonce': self.nonce,
             'hash': self.hash,

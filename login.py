@@ -1,4 +1,3 @@
-import json
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QScrollArea, QWidget, QSizePolicy
 from PyQt5.QtCore import pyqtSlot
@@ -364,18 +363,21 @@ class MainWindow(QtWidgets.QMainWindow):
         # Convert the file information to the required format
         formatted_file_info_list = []
         for i, block in enumerate(blocks):
-            # Deserialize the file information from the block's data
-            file_info = json.loads(block.data)
+            print(f"Type of block: {type(block)}")  # Print the type of block
 
-            formatted_file_info = {
-                "file_id": file_info['file_id'],
-                "file_name": file_info['file_name'],
-                "file_size": file_info['file_size'],
-                "sender": file_info['sender'],
-            }
-            formatted_file_info_list.append(formatted_file_info)
+            # Extract the file information from the block's data
+            file_info = block.data
+            print(f"Type of file_info: {type(file_info)}")  # Print the type of file_info
 
-        return formatted_file_info_list
+        #     formatted_file_info = {
+        #         "file_id": file_info.file_id,
+        #         "file_name": file_info.file_name,
+        #         "file_size": file_info.file_size,
+        #         "sender": file_info.sender,
+        #     }
+        #     formatted_file_info_list.append(formatted_file_info)
+
+        # return formatted_file_info_list
 
 
 
