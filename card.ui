@@ -74,7 +74,7 @@ QLabel {
      <rect>
       <x>80</x>
       <y>20</y>
-      <width>65</width>
+      <width>70</width>
       <height>20</height>
      </rect>
     </property>
@@ -95,7 +95,7 @@ QLabel {
      <rect>
       <x>80</x>
       <y>60</y>
-      <width>65</width>
+      <width>70</width>
       <height>20</height>
      </rect>
     </property>
@@ -114,9 +114,9 @@ QLabel {
    <widget class="QLabel" name="filename">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>160</x>
       <y>20</y>
-      <width>300</width>
+      <width>290</width>
       <height>20</height>
      </rect>
     </property>
@@ -140,7 +140,7 @@ QLabel {
      <rect>
       <x>80</x>
       <y>40</y>
-      <width>65</width>
+      <width>70</width>
       <height>20</height>
      </rect>
     </property>
@@ -159,9 +159,9 @@ QLabel {
    <widget class="QLabel" name="sender">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>160</x>
       <y>60</y>
-      <width>300</width>
+      <width>290</width>
       <height>20</height>
      </rect>
     </property>
@@ -214,9 +214,9 @@ QLabel {
    <widget class="QLabel" name="fileSize">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>160</x>
       <y>40</y>
-      <width>300</width>
+      <width>290</width>
       <height>20</height>
      </rect>
     </property>
