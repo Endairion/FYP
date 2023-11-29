@@ -54,7 +54,10 @@ class Blockchain:
         file_info_list = []
 
         # Iterate over each block in the chain
-        for block in self.chain:
+        for serialized_block in self.chain:
+            # Deserialize the block
+            block = pickle.loads(serialized_block)
+
             # Extract the file information from the block's data
             file_info = block.data  # Modify this line if the file information is stored differently
 
