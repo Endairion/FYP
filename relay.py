@@ -295,7 +295,7 @@ class RelayNode(Node):
 
     def send_fragment(self, ip, fragment_data, fragment_hash):
         # Split the fragment data into chunks
-        chunk_size = 256 
+        chunk_size = 512 
         chunks = [fragment_data[i:i+chunk_size] for i in range(0, len(fragment_data), chunk_size)]
         print(f"Split fragment into {len(chunks)} chunks of size {chunk_size} bytes.")
 
