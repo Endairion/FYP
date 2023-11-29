@@ -1,12 +1,14 @@
-import pickle
+from blockchain import Blockchain
 
 def read_blockchain():
-    # Open the file in read-binary mode
-    with open('blockchain.pkl', 'rb') as file:
-        # Load the blockchain from the file
-        blockchain = pickle.load(file)
+    # Load the blockchain from the file
+    blockchain = Blockchain.load_from_file('blockchain.pkl')
 
+    if blockchain is not None:
+        # Print the chain of the blockchain
         print(blockchain.chain)
+    else:
+        print("No blockchain found in 'blockchain.pkl'")
 
 # Call the function
 read_blockchain()
