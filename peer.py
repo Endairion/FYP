@@ -171,9 +171,9 @@ class Peer(Node):
 
     def handle_blockchain(self, message, connection):
         # Decode the base64 data back into binary data
-        self.chunk += base64.b64decode(message['chunk_data'])
-        print(f"Received blockchain chunk, current blockchain data length: {len(self.blockchain_data)}")
-        print(self.chunk)
+        chunk = base64.b64decode(message['chunk_data'])
+        print(f"Received blockchain chunk, current blockchain data length: {len(chunk)}")
+        print(chunk)
         time.sleep(1)
         ip = connection.getpeername()[0]
         peer_socket = self.connect_to_peer(ip)
@@ -185,7 +185,9 @@ class Peer(Node):
 
         # Send the confirmation message back to the sender
         self.send_message(confirmation_message, peer_socket)
-        print(f"Sent confirmation to {ip} for received fragment.")
+        print(f"Sent confirmation to {ip} for received chunk.")
+
+        self.chunks.append(chunk)
 
     def update_blockchain(self):
         # Connect to Relay Node
