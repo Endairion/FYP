@@ -15,7 +15,7 @@ class Peer(Node):
         self.thread = None
         self.thread_event = threading.Event()
         self.fragment_data = b''
-        self.chunks = b''
+        self.chunks = []
 
 
     def start(self):
