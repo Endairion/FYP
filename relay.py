@@ -140,6 +140,7 @@ class RelayNode(Node):
                 self.thread_event.data = message
                 self.thread_event.set()
             elif message['type'] == 'download':
+                print("Received 'download' message.")
                 self.requester = message['requester']
                 self.file_id = message['file_id']
                 self.search_fragment(message['file_id'])
@@ -147,17 +148,20 @@ class RelayNode(Node):
                     ip = self.download_queue.pop()
                     socket = self.connect_to_peer(ip)
                     self.send_message({'type':'download_fragment'}, socket)
+                    print(f"Sent 'download_fragment' message to {ip}.")
             elif message['type'] == 'found_fragments':
                 self.thread_event.data = message
                 self.thread_event.set()
             elif message['type'] == 'fragment_chunk':
                 self.receive_chunks(message, peer_socket)
             elif message['type'] == 'fragment_end':
+                print("Received 'fragment_end' message.")
                 self.save_chunks(message)
                 if self.download_queue:
                     ip = self.download_queue.pop()
                     socket = self.connect_to_peer(ip)
                     self.send_message({'type':'download_fragment'}, socket)
+                    print(f"Sent 'download_fragment' message to {ip}.")
                 else:
                     self.file_name = self.assemble_file()
                     self.upload(self.file_name)
