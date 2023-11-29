@@ -12,11 +12,10 @@ def read_blockchain():
         # Enumerate the blocks and print their types
         for i, block in enumerate(blocks):
             # Deserialize the block data into a FileMetadata object
-            file_metadata = pickle.loads(block.data)
-            block_data.append(file_metadata.to_dict())
+            print(type(block.data))  # Prints the type of block.data
+            print(block.data)  # Prints the value of block.data
 
         # Print each block of the blockchain
-        print(block_data)
     else:
         print("No blockchain found in 'blockchain.pkl'")
 
