@@ -85,4 +85,4 @@ class Blockchain:
     
     def print_blocks(self):
         for i, block in enumerate(self.chain):
-            print(f"Block {i}: {block}")
+            print(f"Block {i}: {block.to_dict()}")
