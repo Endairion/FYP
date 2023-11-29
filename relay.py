@@ -247,7 +247,7 @@ class RelayNode(Node):
             print("Waiting for more file data...")
             print("Received message:", message)
 
-            if message['type'] == 'upload_chunk':
+            if message['type'] == 'fragment_chunk':
                 # Append received chunk to file data
                 self.file_data += base64.b64decode(message['file_data'])
                 print("Received file chunk, current file data length:", len(self.file_data))
