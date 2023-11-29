@@ -364,16 +364,22 @@ class MainWindow(QtWidgets.QMainWindow):
         # Convert the file information to the required format
         formatted_file_info_list = []
         for i, block in enumerate(blocks):
-            # Deserialize the file information from the block's data
-            file_info = block.data
+            # Skip the genesis block
+            if i == 0:
+                continue
 
-            formatted_file_info = {
-                "file_id": file_info.file_id,
-                "file_name": file_info.file_name,
-                "file_size": file_info.file_size,
-                "sender": file_info.sender,
-            }
-            formatted_file_info_list.append(formatted_file_info)
+            # Check if block.data is a FileMetadata object
+            if isinstance(block.data, FileMetadata):
+                # Access the file attributes
+                file_info = block.data
+
+                formatted_file_info = {
+                    "file_id": file_info.file_id,
+                    "file_name": file_info.file_name,
+                    "file_size": file_info.file_size,
+                    "sender": file_info.sender,
+                }
+                formatted_file_info_list.append(formatted_file_info)
 
         return formatted_file_info_list
 
