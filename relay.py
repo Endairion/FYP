@@ -238,7 +238,7 @@ class RelayNode(Node):
             raise ValueError(f"No FileMetadata found with file_id {file_id}")
 
         # Get the list of all nodes except the sender
-        fragment_hashes = file_metadata.fragment_hashes
+        fragment_hashes = file_metadata.fragments.fragment_hashes
         sender = file_metadata.sender
         nodes = self.dht.get_all_except_sender(sender)
 

@@ -237,7 +237,7 @@ class MainWindow(QtWidgets.QMainWindow):
             card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)  # Set the size policy
             card.setMinimumSize(550, 100)  # Set a minimum size for the CardWidget instances
             layout.addWidget(card)
-            card.downloadButton.clicked.connect(self.request_download(card.file_id))
+            card.downloadButton.clicked.connect(lambda: self.request_download(card.file_id))
 
         # Set the initial CSS for the QPushButton
         self.default_css = """
