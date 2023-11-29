@@ -142,38 +142,30 @@ class RelayNode(Node):
             elif message['type'] == 'blockchain_received_confirmation':
                 self.thread_event.data = message
                 self.thread_event.set()
-        
-        
+            elif message['type'] == 'download':
+                self.search_fragment(message['file_id'])
 
-            
+    def search_fragment(self, file_id):
+        # Load the blockchain
+        blockchain = Blockchain.load_from_file('blockchain.pkl')
 
-    def upload(self, file_data, filename, file_size, peer_socket):
-        initial_message = {"type": "upload_start", "filename": filename, "file_size": file_size}
-        self.send_message(initial_message, peer_socket)
+        blocks = blockchain.extract_file_info()
 
-        if peer_socket is not None:
-            # Get file size
-            initial_message = {"type": "upload_start", "file_size": file_size, "file_name": filename}
-            start = 0
-            chunk_size = 1024  # Size of each chunk in bytes
-            while start < len(file_data):
-                # Get the next chunk of file data
-                chunk = file_data[start : start + chunk_size]
+        # Skip the genesis block and find the FileMetadata with the given file_id
+        for i, block in enumerate(blocks):
+            if i == 0:
+                continue
 
-                # Convert file chunk to base64 string
-                chunk_b64 = base64.b64encode(chunk).decode()
-
-                # Send upload message to peer with file data chunk
-                message = {"type": "upload_chunk", "file_data": chunk_b64}
-                self.send_message(message, peer_socket)
-
-                # Move to the next chunk
-                start += chunk_size
-
-            response = self.wait_for_response()
-            return response
+            # Check if block.data is a FileMetadata object
+            if isinstance(block.data, FileMetadata) and block.data.file_id == file_id:
+                file_metadata = block.data
+                break
         else:
-            return {"success": False, "message": "Could not connect to Peer Node."}
+            raise ValueError(f"No FileMetadata found with file_id {file_id}")
+        
+
+
+        
 
     def receive_chunks(self, message, peer_socket):
             print("Waiting for more file data...")
@@ -231,11 +223,16 @@ class RelayNode(Node):
         # Load the blockchain
         blockchain = Blockchain.load_from_file('blockchain.pkl')
 
-        file_list = blockchain.extract_file_info()
+        blocks = blockchain.extract_file_info()
 
-        # Find the FileMetadata with the given file_id
-        for file_metadata in file_list:
-            if file_metadata.file_id == file_id:
+        # Skip the genesis block and find the FileMetadata with the given file_id
+        for i, block in enumerate(blocks):
+            if i == 0:
+                continue
+
+            # Check if block.data is a FileMetadata object
+            if isinstance(block.data, FileMetadata) and block.data.file_id == file_id:
+                file_metadata = block.data
                 break
         else:
             raise ValueError(f"No FileMetadata found with file_id {file_id}")
@@ -248,17 +245,7 @@ class RelayNode(Node):
         # Retrieve the fragments from the nodes
         fragments = []
         for node in nodes:
-            for fragment_hash in fragment_hashes:
-                # Send a request message to the node with the fragment hash
-                self.send_request(node, fragment_hash)
-
-                # Receive the fragment from the node
-                fragment = self.receive_fragment(node)
-
-                # If the fragment is found, add it to the fragments list and break the loop
-                if fragment is not None:
-                    fragments.append(fragment)
-                    break
+            self.send_message({'type':'search_fragment', 'fragment_hashes': fragment_hashes}, node)
 
         # Assemble the fragments in the order of their hashes in fragment_hashes
         fragments = sorted(fragments, key=lambda fragment: fragment_hashes.index(fragment.hash))
@@ -401,28 +388,6 @@ class RelayNode(Node):
         self.send_message(end_message, peer)
         print("Sent 'blockchain_end' message to peer node.")
 
-    def update_blockchain(self, socket):
-        # Read the blockchain data
-        with open('blockchain.pkl', 'rb') as file:
-            blockchain_data = file.read()
-
-        # Split the blockchain data into chunks
-        chunk_size = 512  # Set chunk size to 512 bytes
-        chunks = [blockchain_data[i:i+chunk_size] for i in range(0, len(blockchain_data), chunk_size)]
-
-        # Send each chunk to the socket
-        for i, chunk in enumerate(chunks):
-            # Convert the chunk data to base64
-            chunk_data_base64 = base64.b64encode(chunk).decode()
-
-            # Create a message with the chunk data
-            message = {
-                'type': 'blockchain_chunk',
-                'chunk_data': chunk_data_base64,
-            }
-
-            # Send the message to the socket
-            self.send_message(message, socket)
 
 
 

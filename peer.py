@@ -115,9 +115,6 @@ class Peer(Node):
                     # Handle logout response
                     self.thread_event.data = message
                     self.thread_event.set()
-                elif message['type'] == 'fragment':
-                    # Handle download fragment from relay node
-                    self.handle_fragment(message)
                 elif message['type'] == 'blockchain':
                     self.handle_blockchain(message, connection)
                 elif message['type'] == 'update_blockchain':
@@ -135,6 +132,10 @@ class Peer(Node):
                     self.save_fragment(message)
                 elif message['type'] == 'blockchain_end':
                     self.save_blockchain()
+                elif message['type'] == 'download':
+                    self.receive_download(message, connection)
+                elif message['type'] == 'download_end':
+                    self.save_download(message)
                 
                 
     def save_fragment(self, message):
@@ -207,7 +208,6 @@ class Peer(Node):
 
         # Reset the blockchain data
         self.chunks = b''
-
                     
 
     def upload(self, file_path):
@@ -257,3 +257,44 @@ class Peer(Node):
             end_message = {"type": "upload_end"}
             self.send_message(end_message, relay_socket)
             print("Sent 'upload_end' message to relay node.")
+
+    def download(self, file_id):
+        # Connect to Relay Node
+        relay_socket = self.connect_to_peer(self.relay_ip)
+
+        if relay_socket is not None:
+            # Send download request to relay node
+            message = {"type": "download", "file_id": file_id}
+            self.send_message(message, relay_socket)
+            print("Sent download request to relay node:", message)
+        else:
+            return {"success": False, "message": "Could not connect to Relay Node."}
+
+    def receive_download(self, message, connection):
+        # Decode the base64 data back into binary data
+        self.chunks += base64.b64decode(message['chunk_data'])
+        print(f"Received download chunk, current file data length: {len(self.chunks)}")
+        time.sleep(1)
+        ip = connection.getpeername()[0]
+        peer_socket = self.connect_to_peer(ip)
+
+        # Create a confirmation message
+        confirmation_message = {
+            'type': 'donwload_chunk_received',
+        }
+
+        # Send the confirmation message back to the sender
+        self.send_message(confirmation_message, peer_socket)
+        print(f"Sent confirmation to {ip} for received chunk.")
+
+    def save_download(self, message):
+        # Ensure the 'downloads' directory exists
+        if not os.path.exists('downloads'):
+            os.makedirs('downloads')
+
+        # Save the file data to a file in the 'downloads' directory
+        with open(os.path.join('downloads', message['file_name']), 'wb') as file:
+            file.write(self.chunks)
+
+        # Reset the file data
+        self.chunks = b''

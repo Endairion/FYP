@@ -13,22 +13,16 @@ import sys
 class CardWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(CardWidget, self).__init__(parent)
+        self.file_id = None
 
         # Load the UI file
         uic.loadUi('card.ui', self)
 
     def set_file_info(self, file_id, file_name, file_size, sender):
+        self.file_id = file_id
         self.filename.setText(file_name)
         self.fileSize.setText(file_size)
         self.sender.setText(sender)
-        # Connect the download button's clicked signal to a slot
-        self.downloadButton.clicked.connect(lambda: self.request_download(file_id))
-
-    @pyqtSlot()
-    def request_download(self, file_id):
-        # Send the file_id to the relay node to request for a download
-        # This is a placeholder, replace with your actual implementation
-        print(f"Requesting download for file_id: {file_id}")
 
 class Worker(QtCore.QThread):
     finished = QtCore.pyqtSignal()
@@ -243,6 +237,7 @@ class MainWindow(QtWidgets.QMainWindow):
             card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)  # Set the size policy
             card.setMinimumSize(550, 100)  # Set a minimum size for the CardWidget instances
             layout.addWidget(card)
+            card.downloadButton.clicked.connect(self.request_download(card.file_id))
 
         # Set the initial CSS for the QPushButton
         self.default_css = """
@@ -388,11 +383,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def convert_size(self, size_bytes):
         if size_bytes == 0:
             return "0B"
-        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        size_name = ("B", "KB", "MB", "GB")
         i = int(math.floor(math.log(size_bytes, 1024)))
         p = math.pow(1024, i)
         s = round(size_bytes / p, 2)
         return "%s %s" % (s, size_name[i])
+    
+    def request_download(self, file_id):
+        self.node.download(file_id)
 
 
 
