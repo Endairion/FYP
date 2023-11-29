@@ -1,3 +1,4 @@
+import math
 import pickle
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QScrollArea, QWidget, QSizePolicy
@@ -384,7 +385,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return formatted_file_info_list
     
-    def convert_size(size_bytes):
+    def convert_size(self, size_bytes):
         if size_bytes == 0:
             return "0B"
         size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
