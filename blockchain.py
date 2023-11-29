@@ -51,19 +51,7 @@ class Blockchain:
         return True
     
     def extract_file_info(self):
-        file_info_list = []
-
-        # Iterate over each block in the chain
-        for i, block in enumerate(self.chain):
-            print(f"Block {i} is of type {type(block)}")
-
-            # Extract the file information from the block's data
-            file_info = block.data  # Modify this line if the file information is stored differently
-
-            # Add the file information to the list
-            file_info_list.append(file_info)
-
-        return file_info_list
+        return self.chain
 
     def save_to_file(self, filename):
         with open(filename, 'wb') as file:
