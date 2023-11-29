@@ -15,7 +15,7 @@ class Peer(Node):
         self.thread = None
         self.thread_event = threading.Event()
         self.fragment_data = b''
-        self.blockchain_data = b''
+        self.chunks = b''
 
 
     def start(self):
@@ -171,9 +171,9 @@ class Peer(Node):
 
     def handle_blockchain(self, message, connection):
         # Decode the base64 data back into binary data
-        self.blockchain_data += base64.b64decode(message['chunk_data'])
+        self.chunk += base64.b64decode(message['chunk_data'])
         print(f"Received blockchain chunk, current blockchain data length: {len(self.blockchain_data)}")
-        print(self.blockchain_data)
+        print(self.chunk)
         time.sleep(1)
         ip = connection.getpeername()[0]
         peer_socket = self.connect_to_peer(ip)
@@ -200,8 +200,9 @@ class Peer(Node):
 
     def save_blockchain(self):
         # Create a new Blockchain object
+        blockchain_data = b''.join(self.chunks)
         # Deserialize the blockchain data
-        blockchain = pickle.loads(self.blockchain_data)
+        blockchain = pickle.loads(blockchain_data)
         print(blockchain.chain)
 
         # Save the Blockchain object to 'blockchain.pkl'
@@ -211,7 +212,7 @@ class Peer(Node):
         print("Blockchain saved to 'blockchain.pkl'")
 
         # Reset the blockchain data
-        self.blockchain_data = b''
+        self.chunks = b''
 
                     
 
