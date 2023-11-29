@@ -1,4 +1,5 @@
 import threading
+import time
 from blockchain import Blockchain
 from node import Node
 import base64
@@ -151,6 +152,9 @@ class Peer(Node):
         confirmation_message = {
             'type': 'fragment_received_confirmation',
         }
+
+        # Sleep for 1 second
+        time.sleep(1)
 
         # Send the confirmation message back to the sender
         self.send_message(confirmation_message, peer_socket)
