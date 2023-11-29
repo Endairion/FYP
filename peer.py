@@ -154,7 +154,7 @@ class Peer(Node):
         relay_socket = self.connect_to_peer(self.relay_ip)
         if relay_socket is not None:
             # Iterate over the fragment paths
-            print(self.fragment_path)
+            print("Fragment Path: ", self.fragment_path)
             for fragment_path in self.fragment_path:
                 # Open the fragment file
                 with open(fragment_path, 'rb') as file:
