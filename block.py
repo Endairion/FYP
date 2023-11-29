@@ -24,9 +24,6 @@ class Block:
             data_string + str(self.timestamp) + str(self.lastHash) + str(self.nonce)
         )
 
-    def __str__(self):
-            return f'Block(index={self.index}, timestamp={self.timestamp}, data={self.data}, lastHash={self.lastHash}, nonce={self.nonce}, hash={self.hash})'
-
     def to_dict(self):
         return {
             'index': self.index,

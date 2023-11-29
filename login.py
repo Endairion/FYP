@@ -232,15 +232,14 @@ class MainWindow(QtWidgets.QMainWindow):
         layout = QVBoxLayout()
         container.setLayout(layout)
 
-        # Hardcoded file information
-        # file_info_list = self.display_file()
+        file_info_list = self.display_file()
 
-        # for file_info in file_info_list:
-        #     card = CardWidget()
-        #     card.set_file_info(**file_info)
-        #     card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)  # Set the size policy
-        #     card.setMinimumSize(550, 100)  # Set a minimum size for the CardWidget instances
-        #     layout.addWidget(card)
+        for file_info in file_info_list:
+            card = CardWidget()
+            card.set_file_info(**file_info)
+            card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)  # Set the size policy
+            card.setMinimumSize(550, 100)  # Set a minimum size for the CardWidget instances
+            layout.addWidget(card)
 
         # Set the initial CSS for the QPushButton
         self.default_css = """
