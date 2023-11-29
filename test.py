@@ -19,10 +19,10 @@ def read_blockchain():
             # Check if block.data is a FileMetadata object
             if isinstance(block.data, FileMetadata):
                 # Access the file_id attribute
-                block_data.append(block.data)
+                block_data.append(block.data.to_dict())
 
         # Print each block of the blockchain
-        print(block_data.to_dict())
+        print(block_data)
     else:
         print("No blockchain found in 'blockchain.pkl'")
 
