@@ -25,6 +25,7 @@ class RelayNode(Node):
         self.download_queue = []
         self.file_id = None
         self.requester = None
+        self.file_data = b''
 
     def start(self):
         # Bind the socket to the node's IP address and port number
