@@ -252,7 +252,9 @@ class RelayNode(Node):
         # Save the fragment data to a file in the 'fragments' directory
         with open(os.path.join('fragments', message['filename']), 'ab') as file:
             file.write(file_data)
-
+            
+        # Clear self.file_data
+        self.file_data = b''
 
     def receive_chunks(self, message, peer_socket):
             print("Waiting for more file data...")
