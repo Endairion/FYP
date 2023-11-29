@@ -377,7 +377,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #     }
         #     formatted_file_info_list.append(formatted_file_info)
 
-        # return formatted_file_info_list
+        return formatted_file_info_list
 
 
 
