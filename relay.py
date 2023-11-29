@@ -267,10 +267,14 @@ class RelayNode(Node):
 
     def assemble_file(self):
         file_id = self.file_id
+        print(f"Starting assembly for file_id: {file_id}")
+
         # Load the blockchain
         blockchain = Blockchain.load_from_file('blockchain.pkl')
+        print("Loaded blockchain")
 
         blocks = blockchain.extract_file_info()
+        print("Extracted file info from blockchain")
 
         # Skip the genesis block and find the FileMetadata with the given file_id
         for i, block in enumerate(blocks):
@@ -284,6 +288,7 @@ class RelayNode(Node):
         else:
             raise ValueError(f"No FileMetadata found with file_id {file_id}")
         
+        print(f"Found FileMetadata for file_id: {file_id}")
         fragment_hashes = file_metadata.fragments.fragment_hashes
 
         # Assemble the fragments
@@ -293,15 +298,17 @@ class RelayNode(Node):
             with open(fragment_path, 'rb') as file:
                 file_data += file.read()
             os.remove(fragment_path)  # delete the fragment file
+            print(f"Read and deleted fragment: {fragment_hash}")
 
         file_name = file_metadata.file_name
+        print(f"Assembled file name: {file_name}")
 
         # Save the assembled file to 'fragments' directory
         with open(os.path.join('fragments', file_name), 'wb') as file:
             file.write(file_data)
         
+        print(f"Saved assembled file to 'fragments' directory as: {file_name}")
         return file_name
-
 
 
     def fragment_file(self, file_data):
