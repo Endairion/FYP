@@ -133,8 +133,12 @@ class Peer(Node):
                     self.save_fragment(message)
                 
     def save_fragment(self, message):
-        # Save the fragment data to a file
-        with open(message['fragment_hash'], 'wb') as file:
+        # Ensure the 'fragments' directory exists
+        if not os.path.exists('fragments'):
+            os.makedirs('fragments')
+
+        # Save the fragment data to a file in the 'fragments' directory
+        with open(os.path.join('fragments', message['fragment_hash']), 'wb') as file:
             file.write(self.fragment_data)
 
         # Reset the fragment data
