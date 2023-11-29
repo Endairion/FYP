@@ -18,6 +18,7 @@ class RelayNode(Node):
         self.users = {}
         self.userCredentials = UserCredentials()
         self.dht = DistributedHashTable()
+        self.thread = None
         self.thread_event = threading.Event()
 
     def start(self):
@@ -33,9 +34,8 @@ class RelayNode(Node):
 
             # Start a thread to handle the connection
             print("Starting thread to handle connection.")
-            connection_thread = threading.Thread(target=self.handle_data, args=(client_socket,))
-            connection_thread.start()
-            connection_thread.join()
+            self.thread = threading.Thread(target=self.handle_data, args=(client_socket,))
+            self.thread.start()
 
     def wait_for_response(self):
         # Wait for a response message from the relay node
@@ -44,6 +44,7 @@ class RelayNode(Node):
         response = self.thread_event.data
 
         return response
+    
     def handle_data(self, connection):
         # Receive and handle messages from connected peer
         while True:
@@ -180,7 +181,7 @@ class RelayNode(Node):
                 self.send_message({"type":"chunk_received","success": True}, peer_socket)
                 print("Sent confirmation to peer.")
 
-    def handle_upload(self, connection, peer_socket):
+    def handle_upload(self, peer_socket):
         print("Started handling the upload.")
         confirmation = {"type": "upload_start_confirmation","success": True}
         self.send_message(confirmation, peer_socket)
@@ -316,10 +317,8 @@ class RelayNode(Node):
             print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
             response = self.wait_for_response()
             if response is not None:
-                print(f"Received response from relay node for chunk {i+1}.")
                 continue
-            else:
-                print(f"No response received from relay node for chunk {i+1}.")
+
 
         # Send an 'upload_end' message to the relay node
         end_message = {"type": "fragment_end", "fragment_hash": fragment_hash}

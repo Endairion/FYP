@@ -141,12 +141,9 @@ class Peer(Node):
         self.fragment_data = b''
 
     def receive_fragment(self, message, connection):
-        ip = connection.getpeername()[0]
-        peer_socket = self.connect_to_peer(ip)
-
         # Decode the fragment data
         self.fragment_data += base64.b64decode(message['fragment_data'])
-        print(f"Received fragment from {ip}, current fragment data length: {len(self.fragment_data)}")
+        print(f"Received fragment, current fragment data length: {len(self.fragment_data)}")
 
         # Create a confirmation message
         confirmation_message = {
@@ -155,6 +152,8 @@ class Peer(Node):
 
         # Sleep for 1 second
         time.sleep(1)
+        ip = connection.getpeername()[0]
+        peer_socket = self.connect_to_peer(ip)
 
         # Send the confirmation message back to the sender
         self.send_message(confirmation_message, peer_socket)
