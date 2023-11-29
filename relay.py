@@ -370,32 +370,30 @@ class RelayNode(Node):
             self.send_blockchain(ip)
 
     def send_blockchain(self, ip):
-        # Open the blockchain file
+        # Open the blockchain file and read all data
         with open('blockchain.pkl', 'rb') as file:
-            peer = self.connect_to_peer(ip)
+            data = file.read()
 
-            # Read and send chunks of the file
-            chunk_size = 512  # Set chunk size to 512 bytes
-            chunk = file.read(chunk_size)
-            while chunk:
-                # Convert the chunk data to base64
-                chunk_data_base64 = base64.b64encode(chunk).decode()
+        peer = self.connect_to_peer(ip)
 
-                # Create a message with the chunk data
-                message = {
-                    'type': 'blockchain',
-                    'chunk_data': chunk_data_base64,
-                }
+        # Split the data into chunks
+        chunk_size = 512  # Set chunk size to 512 bytes
+        chunks = [data[i:i+chunk_size] for i in range(0, len(data), chunk_size)]
 
-                # Send the message to the IP
-                self.send_message(message, peer)
-                print(f"Sent chunk to peer node.")
-                response = self.wait_for_response()
-                if response is not None:
-                    continue
+        # Send each chunk to the peer
+        for i, chunk in enumerate(chunks):
+            # Convert the chunk data to base64
+            chunk_data_base64 = base64.b64encode(chunk).decode()
 
-                # Read the next chunk
-                chunk = file.read(chunk_size)
+            # Create a message with the chunk data
+            message = {
+                'type': 'blockchain',
+                'chunk_data': chunk_data_base64,
+            }
+
+            # Send the message to the IP
+            self.send_message(message, peer)
+            print(f"Sent chunk {i+1} of {len(chunks)} to peer node.")
 
         # Send an 'upload_end' message to the relay node
         end_message = {"type": "blockchain_end"}

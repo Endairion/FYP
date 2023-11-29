@@ -15,7 +15,7 @@ class Peer(Node):
         self.thread = None
         self.thread_event = threading.Event()
         self.fragment_data = b''
-        self.chunks = []
+        self.chunks = b''
 
 
     def start(self):
@@ -171,9 +171,8 @@ class Peer(Node):
 
     def handle_blockchain(self, message, connection):
         # Decode the base64 data back into binary data
-        chunk = base64.b64decode(message['chunk_data'])
-        print(f"Received blockchain chunk, current blockchain data length: {len(chunk)}")
-        print(chunk)
+        self.chunks += base64.b64decode(message['chunk_data'])
+        print(f"Received blockchain chunk, current blockchain data length: {len(self.chunks)}")
         time.sleep(1)
         ip = connection.getpeername()[0]
         peer_socket = self.connect_to_peer(ip)
@@ -187,8 +186,6 @@ class Peer(Node):
         self.send_message(confirmation_message, peer_socket)
         print(f"Sent confirmation to {ip} for received chunk.")
 
-        self.chunks.append(chunk)
-
     def update_blockchain(self):
         # Connect to Relay Node
         relay_socket = self.connect_to_peer(self.relay_ip)
@@ -201,15 +198,10 @@ class Peer(Node):
             return {"success": False, "message": "Could not connect to Relay Node."}
 
     def save_blockchain(self):
-        # Create a new Blockchain object
-        blockchain_data = b''.join(self.chunks)
-        # Deserialize the blockchain data
-        blockchain = pickle.loads(blockchain_data)
-        print(blockchain.chain)
-
-        # Save the Blockchain object to 'blockchain.pkl'
+        # Open the file in write mode
         with open('blockchain.pkl', 'wb') as file:
-            pickle.dump(blockchain, file)
+            # Write the chunks to the file
+            file.write(self.chunks)
 
         print("Blockchain saved to 'blockchain.pkl'")
 
