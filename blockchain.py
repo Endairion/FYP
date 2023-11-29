@@ -55,6 +55,8 @@ class Blockchain:
 
         # Iterate over each block in the chain
         for i, block in enumerate(self.chain):
+            print(f"Block {i} is of type {type(block)}")
+
             # Extract the file information from the block's data
             file_info = block.data  # Modify this line if the file information is stored differently
 
