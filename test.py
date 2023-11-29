@@ -9,7 +9,7 @@ def read_blockchain():
     if blockchain is not None:
         # Enumerate the blocks and print their types
         for i, block in enumerate(blocks):
-            print(block.data)
+            print(block.data.file_id)
 
         # Print each block of the blockchain
         blockchain.print_blocks()
