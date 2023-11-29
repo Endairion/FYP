@@ -6,7 +6,7 @@ def read_blockchain():
         # Load the blockchain from the file
         blockchain = pickle.load(file)
 
-        print(blockchain)
+        print(blockchain.chain)
 
 # Call the function
 read_blockchain()
