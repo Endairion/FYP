@@ -290,7 +290,7 @@ class RelayNode(Node):
 
     def send_fragment(self, ip, fragment_data, fragment_hash):
         # Split the fragment data into chunks
-        chunk_size = 512  # Set chunk size to 512 bytes
+        chunk_size = 256  # Set chunk size to 512 bytes
         chunks = [fragment_data[i:i+chunk_size] for i in range(0, len(fragment_data), chunk_size)]
 
         peer = self.connect_to_peer(ip)
