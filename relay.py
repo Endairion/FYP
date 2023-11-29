@@ -123,14 +123,6 @@ class RelayNode(Node):
 
             elif message['type'] == 'update_blockchain':
                 self.send_blockchain(peer_socket)
-
-            elif message['type'] == 'download':
-                file_data, file_metadata = self.assemble_file(message['file_id'])
-
-                filename = file_metadata.file_name
-                file_size = file_metadata.file_size
-                # Send the file data to the client
-                self.upload(file_data, filename, file_size, peer_socket)
             elif message['type'] == 'upload_chunk':
                 self.receive_chunks(message, peer_socket)
             elif message['type'] == 'upload_end':
