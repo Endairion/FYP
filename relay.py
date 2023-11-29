@@ -240,7 +240,7 @@ class RelayNode(Node):
             os.makedirs('fragments')
 
         # Save the fragment data to a file in the 'fragments' directory
-        with open(os.path.join('fragments', message['filename']), 'wb') as file:
+        with open(os.path.join('fragments', message['filename']), 'ab') as file:
             file.write(file_data)
 
 
