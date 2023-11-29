@@ -171,7 +171,8 @@ class Peer(Node):
     def handle_blockchain(self, message, connection):
         # Decode the base64 data back into binary data
         self.blockchain_data += base64.b64decode(message['chunk_data'])
-
+        print(f"Received blockchain chunk, current blockchain data length: {len(self.blockchain_data)}")
+        print(self.blockchain_data)
         time.sleep(1)
         ip = connection.getpeername()[0]
         peer_socket = self.connect_to_peer(ip)
