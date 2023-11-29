@@ -1,3 +1,4 @@
+import json
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QScrollArea, QWidget, QSizePolicy
 from PyQt5.QtCore import pyqtSlot
