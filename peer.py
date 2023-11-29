@@ -14,6 +14,7 @@ class Peer(Node):
         self.thread = None
         self.thread_event = threading.Event()
         self.fragment_data = b''
+        self.blockchain_data = b''
 
 
     def start(self):
@@ -117,7 +118,7 @@ class Peer(Node):
                     # Handle download fragment from relay node
                     self.handle_fragment(message)
                 elif message['type'] == 'blockchain':
-                    self.handle_blockchain(message)
+                    self.handle_blockchain(message, connection)
                 elif message['type'] == 'update_blockchain':
                     self.thread_event.data = message
                     self.thread_event.set()
@@ -131,6 +132,9 @@ class Peer(Node):
                     self.receive_fragment(message, connection)
                 elif message['type'] == 'fragment_end':
                     self.save_fragment(message)
+                elif message['type'] == 'blockchain_end':
+                    self.save_blockchain()
+                
                 
     def save_fragment(self, message):
         # Ensure the 'fragments' directory exists
@@ -164,13 +168,22 @@ class Peer(Node):
         print(f"Sent confirmation to {ip} for received fragment.")
 
 
-    def handle_blockchain(self, message):
+    def handle_blockchain(self, message, connection):
         # Decode the base64 data back into binary data
-        blockchain_data = base64.b64decode(message['blockchain_data'])
+        self.blockchain_data += base64.b64decode(message['blockchain_data'])
 
-        # Write the binary data to a file
-        with open('blockchain.pkl', 'wb') as file:
-            file.write(blockchain_data)
+        time.sleep(1)
+        ip = connection.getpeername()[0]
+        peer_socket = self.connect_to_peer(ip)
+
+        # Create a confirmation message
+        confirmation_message = {
+            'type': 'blockchain_received_confirmation',
+        }
+
+        # Send the confirmation message back to the sender
+        self.send_message(confirmation_message, peer_socket)
+        print(f"Sent confirmation to {ip} for received fragment.")
 
     def update_blockchain(self):
         # Connect to Relay Node
@@ -182,6 +195,19 @@ class Peer(Node):
             self.send_message(message, relay_socket)
         else:
             return {"success": False, "message": "Could not connect to Relay Node."}
+
+    def save_blockchain(self):
+        # Create a new Blockchain object
+        blockchain = Blockchain()
+
+        # Set the chain of the Blockchain object to the blockchain_data
+        blockchain.chain = self.blockchain_data
+
+        # Save the Blockchain object to 'blockchain.pkl'
+        blockchain.save_to_file('blockchain.pkl')
+
+        # Reset the blockchain data
+        self.blockchain_data = b''
 
                     
 
