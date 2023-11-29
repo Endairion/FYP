@@ -1,9 +1,31 @@
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QScrollArea, QWidget, QSizePolicy
+from PyQt5.QtCore import pyqtSlot
 from blockchain import Blockchain
 from peer import Peer
 import threading
 import re
 import sys
+
+class CardWidget(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super(CardWidget, self).__init__(parent)
+
+        # Load the UI file
+        uic.loadUi('card.ui', self)
+
+    def set_file_info(self, file_id, file_name, file_size, sender):
+        self.filename.setText(file_name)
+        self.fileSize.setText(file_size)
+        self.sender.setText(sender)
+        # Connect the download button's clicked signal to a slot
+        self.downloadButton.clicked.connect(lambda: self.request_download(file_id))
+
+    @pyqtSlot()
+    def request_download(self, file_id):
+        # Send the file_id to the relay node to request for a download
+        # This is a placeholder, replace with your actual implementation
+        print(f"Requesting download for file_id: {file_id}")
 
 class Worker(QtCore.QThread):
     finished = QtCore.pyqtSignal()
@@ -202,6 +224,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.username.setText(self.node.username)
         self.uploadButton.clicked.connect(self.upload_file)
 
+        # Create a container QWidget and set a layout for it
+        scroll_area = self.findChild(QScrollArea, "scrollArea_2")
+        container = scroll_area.findChild(QWidget, "scrollAreaWidgetContents_3")
+
+        # Get the layout of the QWidget
+        layout = QVBoxLayout()
+        container.setLayout(layout)
+
+        # Hardcoded file information
+        file_info_list = self.display_file()
+
+        for file_info in file_info_list:
+            card = CardWidget()
+            card.set_file_info(**file_info)
+            card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)  # Set the size policy
+            card.setMinimumSize(550, 100)  # Set a minimum size for the CardWidget instances
+            layout.addWidget(card)
+
         # Set the initial CSS for the QPushButton
         self.default_css = """
         QPushButton {
@@ -315,7 +355,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def display_file(self):
+        # Load the blockchain from 'blockchain.pkl'
         blockchain = Blockchain.load_from_file('blockchain.pkl')
+
+        # Initialize an empty list to hold the file information
+        file_info_list = []
+
+        # Iterate over the blocks in the blockchain
+        for block in blockchain.chain:
+            # Extract the file metadata from the block
+            metadata = block.data
+            file_info = {
+                "file_id": metadata['file_id'],
+                "file_name": metadata['file_name'],
+                "file_size": metadata['file_size'],
+                "sender": metadata['sender'],
+            }
+
+            # Append the file information to the list
+            file_info_list.append(file_info)
+
+        return file_info_list
 
 
 
