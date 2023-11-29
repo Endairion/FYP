@@ -157,29 +157,29 @@ class Peer(Node):
             for fragment_path in self.fragment_path:
                 # Open the fragment file
                 with open(fragment_path, 'rb') as file:
-                    # Read the file in chunks of 512KB
-                    while True:
-                        # Split the file data into chunks
-                        chunk_size = 512 # Set chunk size to 512
-                        chunks = [file[i:i+chunk_size] for i in range(0, len(file), chunk_size)]
+                    file_data = file.read()  # Read the entire file data
 
-                        # Send each chunk to the relay node
-                        for i, chunk in enumerate(chunks):
-                            base64_string = base64.b64encode(chunk).decode()
-                            print(f"Sending chunk {i+1} of {len(chunks)} (size: {len(chunk)} bytes)")
+                # Split the file data into chunks
+                chunk_size = 512  # Set chunk size to 512
+                chunks = [file_data[i:i+chunk_size] for i in range(0, len(file_data), chunk_size)]
 
-                            chunk_message = {"type": "fragment_chunk", "file_data": base64_string}
-                            self.send_message(chunk_message, relay_socket)
-                            print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
-                            received = self.wait_for_response()
-                            if received is not None:
-                                continue
-                        
-                        # Send an 'upload_end' message to the relay node
-                        filename = os.path.basename(fragment_path)
-                        end_message = {"type": "fragment_end", "filename": filename}
-                        self.send_message(end_message, relay_socket)
-                        print("Sent 'fragment_end' message to relay node.")
+                # Send each chunk to the relay node
+                for i, chunk in enumerate(chunks):
+                    base64_string = base64.b64encode(chunk).decode()
+                    print(f"Sending chunk {i+1} of {len(chunks)} (size: {len(chunk)} bytes)")
+
+                    chunk_message = {"type": "fragment_chunk", "file_data": base64_string}
+                    self.send_message(chunk_message, relay_socket)
+                    print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
+                    received = self.wait_for_response()
+                    if received is not None:
+                        continue
+
+                # Send an 'upload_end' message to the relay node
+                filename = os.path.basename(fragment_path)
+                end_message = {"type": "fragment_end", "filename": filename}
+                self.send_message(end_message, relay_socket)
+                print("Sent 'fragment_end' message to relay node.")
 
     def search_fragment(self, message):
         fragment_hashes = message['fragment_hashes']
