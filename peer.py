@@ -12,6 +12,7 @@ class Peer(Node):
         self.username = None
         self.thread = None
         self.thread_event = threading.Event()
+        self.fragment_data = b''
 
 
     def start(self):
@@ -125,25 +126,23 @@ class Peer(Node):
                 elif message['type'] == 'chunk_received':
                     self.thread_event.data = message
                     self.thread_event.set()
+                elif message['type'] == 'receive_fragment':
+                    self.receive_fragment(message)
+                elif message['type'] == 'fragment_end':
+                    self.save_fragment(message)
                 
-            
+    def save_fragment(self, message):
+        # Save the fragment data to a file
+        with open(message['fragment_hash'], 'wb') as file:
+            file.write(self.fragment_data)
 
-    def handle_fragment(self, message):
+        # Reset the fragment data
+        self.fragment_data = b''
+
+    def receive_fragment(self, message):
         # Decode the fragment data
-        fragment_data = base64.b64decode(message['fragment_data'])
+        self.fragment_data += base64.b64decode(message['fragment_data'])
 
-        # Extract the fragment hash from the message
-        fragment_hash = message['fragment_hash']
-
-        # Use the fragment hash as the filename
-        fragment_filename = os.path.join('fragments', fragment_hash)
-
-        # Create the directory if it does not exist
-        os.makedirs(os.path.dirname(fragment_filename), exist_ok=True)
-
-        # Write the fragment data to a file
-        with open(fragment_filename, 'wb') as f:
-            f.write(fragment_data)
 
     def handle_blockchain(self, message):
         # Decode the base64 data back into binary data
@@ -194,7 +193,8 @@ class Peer(Node):
                 file_data = file.read()
 
             # Split the file data into chunks
-            chunks = [file_data[i:i+256] for i in range(0, len(file_data), 256)]
+            chunk_size = 512
+            chunks = [file_data[i:i+chunk_size] for i in range(0, len(file_data), chunk_size)]
 
             # Send each chunk to the relay node
             for i, chunk in enumerate(chunks):

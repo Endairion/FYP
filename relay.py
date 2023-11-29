@@ -132,6 +132,8 @@ class RelayNode(Node):
                 print("Fragmented file data.")
                 print("Metadata:", metadata)
                 print("Fragment data list:", fragment_data_list)
+                self.distribute_file(metadata, fragment_data_list)
+                self.add_to_blockchain(metadata)
 
             
 
@@ -286,17 +288,28 @@ class RelayNode(Node):
             # Send the fragment and its hash to the IP
             self.send_fragment(ip, fragment_data, fragment_hash)
 
-    def send_fragment(self, ip, fragment_data):
-    # Create a message with the fragment data
-        message = {
-            'type': 'fragment',
-            'fragment_data': base64.b64encode(fragment_data).decode(),
-        }
+    def send_fragment(self, ip, fragment_data, fragment_hash):
+        # Split the fragment data into chunks
+        chunk_size = 512  # Set chunk size to 512 bytes
+        chunks = [fragment_data[i:i+chunk_size] for i in range(0, len(fragment_data), chunk_size)]
 
         peer = self.connect_to_peer(ip)
 
-    # Send the message to the IP
-        self.send_message(message, peer)
+        # Send each chunk to the peer
+        for i, chunk in enumerate(chunks):
+            # Create a message with the chunk data
+            message = {
+                'type': 'receive_fragment',
+                'fragment_data': base64.b64encode(chunk).decode(),
+            }
+
+            # Send the message to the IP
+            self.send_message(message, peer)
+
+        # Send an 'upload_end' message to the relay node
+        end_message = {"type": "fragment_end", "fragment_hash": fragment_hash}
+        self.send_message(end_message, peer)
+        print("Sent 'fragment_end' message to relay node.")
 
 
     def add_to_blockchain(self, metadata):
@@ -337,38 +350,52 @@ class RelayNode(Node):
             self.send_blockchain(ip)
 
     def send_blockchain(self, ip):
-        # Create a message with the blockchain data
+        # Read the blockchain data
         with open('blockchain.pkl', 'rb') as file:
             blockchain_data = file.read()
 
-        # Convert the binary data to base64
-        blockchain_data_base64 = base64.b64encode(blockchain_data)
-
-        message = {
-            'type': 'blockchain',
-            'blockchain_data': blockchain_data_base64,
-        }
+        # Split the blockchain data into chunks
+        chunk_size = 512  # Set chunk size to 512 bytes
+        chunks = [blockchain_data[i:i+chunk_size] for i in range(0, len(blockchain_data), chunk_size)]
 
         peer = self.connect_to_peer(ip)
 
-        # Send the message to the IP
-        self.send_message(message, peer)
+        # Send each chunk to the peer
+        for i, chunk in enumerate(chunks):
+            # Convert the chunk data to base64
+            chunk_data_base64 = base64.b64encode(chunk).decode()
+
+            # Create a message with the chunk data
+            message = {
+                'type': 'blockchain_chunk',
+                'chunk_data': chunk_data_base64,
+            }
+
+            # Send the message to the IP
+            self.send_message(message, peer)
 
     def update_blockchain(self, socket):
-        # Create a message with the blockchain data
+        # Read the blockchain data
         with open('blockchain.pkl', 'rb') as file:
             blockchain_data = file.read()
 
-        # Convert the binary data to base64
-        blockchain_data_base64 = base64.b64encode(blockchain_data)
+        # Split the blockchain data into chunks
+        chunk_size = 512  # Set chunk size to 512 bytes
+        chunks = [blockchain_data[i:i+chunk_size] for i in range(0, len(blockchain_data), chunk_size)]
 
-        message = {
-            'type': 'blockchain',
-            'blockchain_data': blockchain_data_base64,
-        }
+        # Send each chunk to the socket
+        for i, chunk in enumerate(chunks):
+            # Convert the chunk data to base64
+            chunk_data_base64 = base64.b64encode(chunk).decode()
 
-        # Send the message to the IP
-        self.send_message(message, socket)
+            # Create a message with the chunk data
+            message = {
+                'type': 'blockchain_chunk',
+                'chunk_data': chunk_data_base64,
+            }
+
+            # Send the message to the socket
+            self.send_message(message, socket)
 
 
 
