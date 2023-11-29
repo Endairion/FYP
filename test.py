@@ -6,7 +6,7 @@ def read_blockchain():
 
     if blockchain is not None:
         # Print the chain of the blockchain
-        print(blockchain.chain)
+        print(blockchain)
     else:
         print("No blockchain found in 'blockchain.pkl'")
 
