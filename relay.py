@@ -158,6 +158,10 @@ class RelayNode(Node):
                     ip = self.download_queue.pop()
                     socket = self.connect_to_peer(ip)
                     self.send_message({'type':'download_fragment'}, socket)
+                else:
+                    self.file_name = self.assemble_file()
+                    self.upload(self.file_name)
+
                 
 
     def upload(self, file_name):
