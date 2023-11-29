@@ -16,6 +16,7 @@ class Peer(Node):
         self.thread_event = threading.Event()
         self.fragment_data = b''
         self.chunks = b''
+        self.fragment_path = []
 
 
     def start(self):
@@ -132,12 +133,72 @@ class Peer(Node):
                     self.save_fragment(message)
                 elif message['type'] == 'blockchain_end':
                     self.save_blockchain()
-                elif message['type'] == 'download':
+                elif message['type'] == 'download_chunk':
                     self.receive_download(message, connection)
                 elif message['type'] == 'download_end':
                     self.save_download(message)
+                elif message['type'] == 'search_fragment':
+                    found_fragments = self.search_fragment(message)
+                    if found_fragments is not None:
+                        # Send found fragments to Relay Node
+                        message = {"type": "found_fragments", "fragments": found_fragments}
+                        ip = connection.getpeername()[0]
+                        relay_socket = self.connect_to_peer(ip)
+                        self.send_message(message, relay_socket)
+                elif message['type'] == 'download_fragment':
+                    self.send_fragment(message)
                 
-                
+    
+    def send_fragment(self, message):
+        # Connect to Relay Node
+        relay_socket = self.connect_to_peer(self.relay_ip)
+        if relay_socket is not None:
+            # Iterate over the fragment paths
+            for fragment_path in self.fragment_path:
+                # Open the fragment file
+                with open(fragment_path, 'rb') as file:
+                    # Read the file in chunks of 512KB
+                    while True:
+                        # Split the file data into chunks
+                        chunk_size = 512 # Set chunk size to 512
+                        chunks = [file[i:i+chunk_size] for i in range(0, len(file), chunk_size)]
+
+                        # Send each chunk to the relay node
+                        for i, chunk in enumerate(chunks):
+                            base64_string = base64.b64encode(chunk).decode()
+                            print(f"Sending chunk {i+1} of {len(chunks)} (size: {len(chunk)} bytes)")
+
+                            chunk_message = {"type": "fragment_chunk", "file_data": base64_string}
+                            self.send_message(chunk_message, relay_socket)
+                            print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
+                            received = self.wait_for_response()
+                            if received is not None:
+                                continue
+                        
+                        # Send an 'upload_end' message to the relay node
+                        filename = os.path.basename(fragment_path)
+                        end_message = {"type": "fragment_end", "filename": filename}
+                        self.send_message(end_message, relay_socket)
+                        print("Sent 'fragment_end' message to relay node.")
+
+    def search_fragment(self, message):
+        fragment_hashes = message['fragment_hashes']
+
+        files = os.listdir('fragments')
+
+        found_fragments = []
+
+        for file in files:
+            filename, _ = os.path.splitext(file)
+            if filename in fragment_hashes:
+                self.fragment_path.append(os.path.join('fragments', file))
+                found_fragments.append(filename)
+        
+        # Return None if found_fragments is empty, otherwise return found_fragments
+        return None if not found_fragments else found_fragments
+
+
+        
     def save_fragment(self, message):
         # Ensure the 'fragments' directory exists
         if not os.path.exists('fragments'):
@@ -264,7 +325,7 @@ class Peer(Node):
 
         if relay_socket is not None:
             # Send download request to relay node
-            message = {"type": "download", "file_id": file_id}
+            message = {"type": "download", "file_id": file_id, "requester": self.username}
             self.send_message(message, relay_socket)
             print("Sent download request to relay node:", message)
         else:

@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import pickle
 import threading
 import base64
@@ -21,6 +22,9 @@ class RelayNode(Node):
         self.dht = DistributedHashTable()
         self.thread = None
         self.thread_event = threading.Event()
+        self.download_queue = []
+        self.file_id = None
+        self.requester = None
 
     def start(self):
         # Bind the socket to the node's IP address and port number
@@ -123,7 +127,7 @@ class RelayNode(Node):
             elif message['type'] == 'download':
                 file_data, file_metadata = self.assemble_file(message['file_id'])
 
-                filename = file_metadata.filename
+                filename = file_metadata.file_name
                 file_size = file_metadata.file_size
                 # Send the file data to the client
                 self.upload(file_data, filename, file_size, peer_socket)
@@ -143,7 +147,63 @@ class RelayNode(Node):
                 self.thread_event.data = message
                 self.thread_event.set()
             elif message['type'] == 'download':
+                self.requester = message['username']
+                self.file_id = message['file_id']
                 self.search_fragment(message['file_id'])
+                if self.download_queue:
+                    ip = self.download_queue.pop(0)
+                    socket = self.connect_to_peer(ip)
+                    self.send_message({'type':'download_fragment'}, socket)
+            elif message['type'] == 'found_fragments':
+                self.thread_event.data = message
+                self.thread_event.set()
+            elif message['type'] == 'fragment_chunk':
+                self.receive_chunks(message, peer_socket)
+            elif message['type'] == 'fragment_end':
+                self.save_chunks(message)
+                if self.download_queue:
+                    ip = self.download_queue.pop(0)
+                    socket = self.connect_to_peer(ip)
+                    self.send_message({'type':'download_fragment'}, socket)
+                else:
+                    file_name = self.assemble_file()
+                    self.upload(file_name)
+
+    def upload(self, file_name):
+        # Open the file and read all data
+        with open(os.path.join('fragments', file_name), 'rb') as file:
+            data = file.read()
+
+        ip = self.dht.get(self.requester)
+        peer = self.connect_to_peer(ip)
+
+        # Split the data into chunks
+        chunk_size = 512  # Set chunk size to 512 bytes
+        chunks = [data[i:i+chunk_size] for i in range(0, len(data), chunk_size)]
+
+        # Send each chunk to the peer
+        for i, chunk in enumerate(chunks):
+            # Convert the chunk data to base64
+            chunk_data_base64 = base64.b64encode(chunk).decode()
+
+            # Create a message with the chunk data
+            message = {
+                'type': 'download_chunk',
+                'file_data': chunk_data_base64,
+            }
+
+            # Send the message to the IP
+            self.send_message(message, peer)
+            print(f"Sent chunk {i+1} of {len(chunks)} to peer node.")
+            response = self.wait_for_response()
+            if response is not None:
+                continue
+        
+        # Send an 'download_end' message to the relay node
+        end_message = {"type": "download_end", "file_name": file_name}
+        self.send_message(end_message, peer)
+        print("Sent 'download_end' message to peer node.")
+
 
     def search_fragment(self, file_id):
         # Load the blockchain
@@ -163,9 +223,33 @@ class RelayNode(Node):
         else:
             raise ValueError(f"No FileMetadata found with file_id {file_id}")
         
-
-
+        fragment_hashes = file_metadata.fragments.fragment_hashes
+        sender = file_metadata.sender
+        IPList = self.dht.get_all_except_sender(sender)
         
+        for ip in IPList:
+            if len(fragment_hashes) == 0:
+                break
+    
+            socket = self.connect_to_peer(ip)
+            self.send_message({'type':'search_fragment', 'fragment_hashes': fragment_hashes}, socket)
+
+            response = self.wait_for_response()
+            if response is not None:
+                found_fragments = response['found_fragments']
+                fragment_hashes = [hash for hash in fragment_hashes if hash not in found_fragments]
+                self.download_queue.append(ip)
+
+    def save_chunks(self, message):
+        file_data = self.file_data
+
+        if not os.path.exists('fragments'):
+            os.makedirs('fragments')
+
+        # Save the fragment data to a file in the 'fragments' directory
+        with open(os.path.join('fragments', message['filename']), 'wb') as file:
+            file.write(file_data)
+
 
     def receive_chunks(self, message, peer_socket):
             print("Waiting for more file data...")
@@ -186,40 +270,8 @@ class RelayNode(Node):
         print("Sent confirmation to client.")
     
 
-        # # Check if all chunks have been received
-        # if len(self.file_data) == self.file_size:
-        #     print("All file chunks received.")
-
-        #     # Send response to client
-        #     result = {"type": "upload_complete", "success": True, "message": "File upload successful"}
-        #     self.send_message(result, peer_socket)
-        #     print("Sent upload complete message to client.")
-
-        #     # Process file data for distribution
-        #     metadata, fragment_data_list = self.fragment_file(self.file_data)
-        #     print("Fragmented file data.")
-
-        #     self.distribute_file(metadata, fragment_data_list)
-        #     print("Distributed file fragments.")
-
-        #     self.add_to_blockchain(metadata)
-        #     print("Added file metadata to blockchain.")
-        # else:
-        #     print("Not all file chunks received.")
-
-        #     # Send error response to client
-        #     result = {"type": "upload_error", "success": False, "message": "File upload unsuccessful, not all chunks received"}
-        #     self.send_message(result, peer_socket)
-        #     print("Sent upload error message to client.")
-
-        # # Reset file data
-        # self.file_data = b''
-        # self.file_size = 0
-        # self.file_name = None
-        # self.sender = None
-        # print("Reset file data.")
-
-    def assemble_file(self, file_id):
+    def assemble_file(self):
+        file_id = self.file_id
         # Load the blockchain
         blockchain = Blockchain.load_from_file('blockchain.pkl')
 
@@ -236,24 +288,26 @@ class RelayNode(Node):
                 break
         else:
             raise ValueError(f"No FileMetadata found with file_id {file_id}")
-
-        # Get the list of all nodes except the sender
+        
         fragment_hashes = file_metadata.fragments.fragment_hashes
-        sender = file_metadata.sender
-        nodes = self.dht.get_all_except_sender(sender)
 
-        # Retrieve the fragments from the nodes
-        fragments = []
-        for node in nodes:
-            self.send_message({'type':'search_fragment', 'fragment_hashes': fragment_hashes}, node)
+        # Assemble the fragments
+        file_data = b''
+        for fragment_hash in fragment_hashes:
+            fragment_path = os.path.join('fragments', fragment_hash)
+            with open(fragment_path, 'rb') as file:
+                file_data += file.read()
+            os.remove(fragment_path)  # delete the fragment file
 
-        # Assemble the fragments in the order of their hashes in fragment_hashes
-        fragments = sorted(fragments, key=lambda fragment: fragment_hashes.index(fragment.hash))
+        file_name = file_metadata.file_name
 
-        # Join the fragments to get the file data
-        file_data = b''.join(fragment.data for fragment in fragments)
+        # Save the assembled file
+        with open(file_name, 'wb') as file:
+            file.write(file_data)
+        
+        return file_name
 
-        return file_data, file_metadata
+
 
     def fragment_file(self, file_data):
         file_id = str(uuid.uuid4())
