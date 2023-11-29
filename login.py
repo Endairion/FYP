@@ -358,24 +358,21 @@ class MainWindow(QtWidgets.QMainWindow):
         # Load the blockchain from 'blockchain.pkl'
         blockchain = Blockchain.load_from_file('blockchain.pkl')
 
-        # Initialize an empty list to hold the file information
-        file_info_list = []
+        # Extract the file information from the blockchain
+        file_info_list = blockchain.extract_file_info()
 
-        # Iterate over the blocks in the blockchain
-        for block in blockchain.chain:
-            # Extract the file metadata from the block
-            metadata = block.data
-            file_info = {
-                "file_id": metadata['file_id'],
-                "file_name": metadata['file_name'],
-                "file_size": metadata['file_size'],
-                "sender": metadata['sender'],
+        # Convert the file information to the required format
+        formatted_file_info_list = []
+        for file_info in file_info_list:
+            formatted_file_info = {
+                "file_id": file_info['file_id'],
+                "file_name": file_info['file_name'],
+                "file_size": file_info['file_size'],
+                "sender": file_info['sender'],
             }
+            formatted_file_info_list.append(formatted_file_info)
 
-            # Append the file information to the list
-            file_info_list.append(file_info)
-
-        return file_info_list
+        return formatted_file_info_list
 
 
 
