@@ -127,7 +127,7 @@ class Peer(Node):
                     self.thread_event.data = message
                     self.thread_event.set()
                 elif message['type'] == 'receive_fragment':
-                    self.receive_fragment(message)
+                    self.receive_fragment(message, connection)
                 elif message['type'] == 'fragment_end':
                     self.save_fragment(message)
                 
@@ -139,9 +139,20 @@ class Peer(Node):
         # Reset the fragment data
         self.fragment_data = b''
 
-    def receive_fragment(self, message):
+    def receive_fragment(self, message, connection):
+        ip = connection.getpeername()[0]
+        peer_socket = self.connect_to_peer(ip)
+
         # Decode the fragment data
         self.fragment_data += base64.b64decode(message['fragment_data'])
+
+        # Create a confirmation message
+        confirmation_message = {
+            'type': 'fragment_received_confirmation',
+        }
+
+        # Send the confirmation message back to the sender
+        self.send_message(confirmation_message, peer_socket)
 
 
     def handle_blockchain(self, message):

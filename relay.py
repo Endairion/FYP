@@ -134,6 +134,10 @@ class RelayNode(Node):
                 print("Fragment data list:", fragment_data_list)
                 self.distribute_file(metadata, fragment_data_list)
                 self.add_to_blockchain(metadata)
+            elif message['type'] == 'fragment_received_confirmation':
+                self.thread_event.data = message
+                self.thread_event.set()
+        
 
             
 
@@ -290,7 +294,7 @@ class RelayNode(Node):
 
     def send_fragment(self, ip, fragment_data, fragment_hash):
         # Split the fragment data into chunks
-        chunk_size = 256  # Set chunk size to 512 bytes
+        chunk_size = 256 
         chunks = [fragment_data[i:i+chunk_size] for i in range(0, len(fragment_data), chunk_size)]
 
         peer = self.connect_to_peer(ip)
@@ -298,13 +302,19 @@ class RelayNode(Node):
         # Send each chunk to the peer
         for i, chunk in enumerate(chunks):
             # Create a message with the chunk data
+            fragment_data_base64 = base64.b64encode(chunk).decode()
+            print(f"Sending chunk {i+1} of {len(chunks)} (size: {len(chunk)} bytes)")
             message = {
                 'type': 'receive_fragment',
-                'fragment_data': base64.b64encode(chunk).decode(),
+                'fragment_data': fragment_data_base64,
             }
 
             # Send the message to the IP
             self.send_message(message, peer)
+            print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
+            response = self.wait_for_response()
+            if response is not None:
+                continue
 
         # Send an 'upload_end' message to the relay node
         end_message = {"type": "fragment_end", "fragment_hash": fragment_hash}
