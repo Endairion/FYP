@@ -19,8 +19,7 @@ def read_blockchain():
             # Check if block.data is a FileMetadata object
             if isinstance(block.data, FileMetadata):
                 # Access the file_id attribute
-                file_id = block.data.file_id
-                block_data.append(file_id)
+                block_data.append(block.data)
 
         # Print each block of the blockchain
         print(block_data)
