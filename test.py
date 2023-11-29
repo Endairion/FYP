@@ -13,7 +13,7 @@ def read_blockchain():
             block_data.append(block.to_dict())
 
         # Print each block of the blockchain
-        blockchain.print_blocks()
+        print(block_data)
     else:
         print("No blockchain found in 'blockchain.pkl'")
 
