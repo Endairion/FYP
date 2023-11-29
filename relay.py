@@ -296,14 +296,16 @@ class RelayNode(Node):
         # Split the fragment data into chunks
         chunk_size = 256 
         chunks = [fragment_data[i:i+chunk_size] for i in range(0, len(fragment_data), chunk_size)]
+        print(f"Split fragment into {len(chunks)} chunks of size {chunk_size} bytes.")
 
         peer = self.connect_to_peer(ip)
+        print(f"Connected to peer at {ip}.")
 
         # Send each chunk to the peer
         for i, chunk in enumerate(chunks):
             # Create a message with the chunk data
             fragment_data_base64 = base64.b64encode(chunk).decode()
-            print(f"Sending chunk {i+1} of {len(chunks)} (size: {len(chunk)} bytes)")
+            print(f"Sending chunk {i+1} of {len(chunks)} (size: {len(chunk)} bytes).")
             message = {
                 'type': 'receive_fragment',
                 'fragment_data': fragment_data_base64,
@@ -314,7 +316,10 @@ class RelayNode(Node):
             print(f"Sent chunk {i+1} of {len(chunks)} to relay node.")
             response = self.wait_for_response()
             if response is not None:
+                print(f"Received response from relay node for chunk {i+1}.")
                 continue
+            else:
+                print(f"No response received from relay node for chunk {i+1}.")
 
         # Send an 'upload_end' message to the relay node
         end_message = {"type": "fragment_end", "fragment_hash": fragment_hash}

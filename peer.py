@@ -145,6 +145,7 @@ class Peer(Node):
 
         # Decode the fragment data
         self.fragment_data += base64.b64decode(message['fragment_data'])
+        print(f"Received fragment from {ip}, current fragment data length: {len(self.fragment_data)}")
 
         # Create a confirmation message
         confirmation_message = {
@@ -153,6 +154,7 @@ class Peer(Node):
 
         # Send the confirmation message back to the sender
         self.send_message(confirmation_message, peer_socket)
+        print(f"Sent confirmation to {ip} for received fragment.")
 
 
     def handle_blockchain(self, message):
