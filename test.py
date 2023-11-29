@@ -1,3 +1,4 @@
+import pickle
 from blockchain import Blockchain
 
 def read_blockchain():
@@ -10,7 +11,9 @@ def read_blockchain():
     if blockchain is not None:
         # Enumerate the blocks and print their types
         for i, block in enumerate(blocks):
-            block_data.append(block.data.to_dict())
+            # Deserialize the block data into a FileMetadata object
+            file_metadata = pickle.loads(block.data)
+            block_data.append(file_metadata.to_dict())
 
         # Print each block of the blockchain
         print(block_data)
