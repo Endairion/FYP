@@ -81,5 +81,4 @@ class Blockchain:
             return None
     
     def __str__(self):
-        chain_info = "\n".join(str(block) for block in self.chain)
-        return f"Blockchain:\n{chain_info}"
+        return '\n'.join(str(block) for block in self.chain)
