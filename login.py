@@ -363,14 +363,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # Convert the file information to the required format
         formatted_file_info_list = []
         for i, block in enumerate(blocks):
-            # Extract the file information from the block's data
-            file_info = block.data
+            # Deserialize the file information from the block's data
+            file_info = json.loads(block.data)
 
             formatted_file_info = {
-                "file_id": file_info.file_id,
-                "file_name": file_info.file_name,
-                "file_size": file_info.file_size,
-                "sender": file_info.sender,
+                "file_id": file_info['file_id'],
+                "file_name": file_info['file_name'],
+                "file_size": file_info['file_size'],
+                "sender": file_info['sender'],
             }
             formatted_file_info_list.append(formatted_file_info)
 
