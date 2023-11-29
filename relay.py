@@ -251,6 +251,8 @@ class RelayNode(Node):
                 # Append received chunk to file data
                 self.file_data += base64.b64decode(message['file_data'])
                 print("Received file chunk, current file data length:", len(self.file_data))
+
+                time.sleep(1)
                 self.send_message({"type":"chunk_received","success": True}, peer_socket)
                 print("Sent confirmation to peer.")
 
