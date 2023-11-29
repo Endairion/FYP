@@ -1,3 +1,4 @@
+import pickle
 import threading
 import time
 from blockchain import Blockchain
@@ -199,13 +200,15 @@ class Peer(Node):
 
     def save_blockchain(self):
         # Create a new Blockchain object
-        blockchain = Blockchain()
-
-        # Set the chain of the Blockchain object to the blockchain_data
-        blockchain.chain = self.blockchain_data
+        # Deserialize the blockchain data
+        blockchain = pickle.loads(self.blockchain_data)
+        print(blockchain.chain)
 
         # Save the Blockchain object to 'blockchain.pkl'
-        blockchain.save_to_file('blockchain.pkl')
+        with open('blockchain.pkl', 'wb') as file:
+            pickle.dump(blockchain, file)
+
+        print("Blockchain saved to 'blockchain.pkl'")
 
         # Reset the blockchain data
         self.blockchain_data = b''
