@@ -394,6 +394,9 @@ class RelayNode(Node):
             # Send the message to the IP
             self.send_message(message, peer)
             print(f"Sent chunk {i+1} of {len(chunks)} to peer node.")
+            response = self.wait_for_response()
+            if response is not None:
+                continue
 
         # Send an 'upload_end' message to the relay node
         end_message = {"type": "blockchain_end"}
