@@ -296,8 +296,8 @@ class RelayNode(Node):
 
         file_name = file_metadata.file_name
 
-        # Save the assembled file
-        with open(file_name, 'wb') as file:
+        # Save the assembled file to 'fragments' directory
+        with open(os.path.join('fragments', file_name), 'wb') as file:
             file.write(file_data)
         
         return file_name
