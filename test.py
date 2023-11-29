@@ -5,11 +5,12 @@ def read_blockchain():
     blockchain = Blockchain.load_from_file('blockchain.pkl')
 
     blocks = blockchain.extract_file_info()
+    block_data = []
     
     if blockchain is not None:
         # Enumerate the blocks and print their types
         for i, block in enumerate(blocks):
-            print(block.data.file_id)
+            block_data.append(block.to_dict())
 
         # Print each block of the blockchain
         blockchain.print_blocks()
