@@ -82,3 +82,7 @@ class Blockchain:
     
     def __str__(self):
             return '\n'.join(str(block) for block in self.chain)
+    
+    def print_blocks(self):
+        for i, block in enumerate(self.chain):
+            print(f"Block {i}: {block}")
