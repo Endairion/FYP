@@ -139,7 +139,7 @@ class RelayNode(Node):
                 self.thread_event.data = message
                 self.thread_event.set()
             elif message['type'] == 'download':
-                self.requester = message['username']
+                self.requester = message['requester']
                 self.file_id = message['file_id']
                 self.search_fragment(message['file_id'])
                 if self.download_queue:
