@@ -11,7 +11,9 @@ class FileMetadata:
         self.sender = sender
         self.timestamp = time.time()  # A timestamp for when the metadata was created
         self.file_hash = file_hash
-
+        
+    def __str__(self):
+        return f"FileMetadata(file_id={self.file_id}, file_name={self.file_name}, file_size={self.file_size}, fragments={self.fragments}, sender={self.sender}, timestamp={self.timestamp}, file_hash={self.file_hash})"
     def to_dict(self):
         return {
             'file_id': self.file_id,
