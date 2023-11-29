@@ -343,13 +343,11 @@ class RelayNode(Node):
             genesis_block = self.blockchain.createGenesisBlock()
             self.blockchain.addBlock(genesis_block)
 
-        # Convert the metadata to a dictionary
-        metadata_dict = metadata.to_dict()
 
         timestamp = time.time()
 
         # Create a new block with the metadata
-        new_block = Block(timestamp, metadata_dict)
+        new_block = Block(timestamp, metadata)
 
         # Add the new block to the blockchain
         self.blockchain.addBlock(new_block)
