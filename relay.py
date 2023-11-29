@@ -306,7 +306,11 @@ class RelayNode(Node):
         for fragment_hash in fragment_hashes:
             fragment_path = os.path.join('fragments', fragment_hash)
             with open(fragment_path, 'rb') as file:
-                file_data += file.read()
+                fragment_data = file.read()
+                # Compute the hash of the fragment data
+                computed_hash = hashlib.sha256(fragment_data).hexdigest()
+                print(f"Computed hash for fragment {fragment_hash}: {computed_hash}")
+                file_data += fragment_data
             os.remove(fragment_path)  # delete the fragment file
             print(f"Read and deleted fragment: {fragment_hash}")
 
@@ -317,6 +321,10 @@ class RelayNode(Node):
         with open(os.path.join('fragments', file_name), 'wb') as file:
             file.write(file_data)
         
+        # Compute the hash of the assembled file data
+        assembled_hash = hashlib.sha256(file_data).hexdigest()
+        print(f"Computed hash for assembled file: {assembled_hash}")
+
         print(f"Saved assembled file to 'fragments' directory as: {file_name}")
         return file_name
 
