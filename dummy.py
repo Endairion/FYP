@@ -1,8 +1,6 @@
 import threading
 import json
 from peer import Peer
-from login import LoginForm
-from PyQt5.QtWidgets import QApplication
 
 def start_node(node):
     node.start()
