@@ -81,4 +81,4 @@ class Blockchain:
             return None
     
     def __str__(self):
-            return '\n'.join(str(block) for block in self.chain)
+        return '\n'.join(str(pickle.loads(block)) for block in self.chain)
