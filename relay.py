@@ -228,7 +228,7 @@ class RelayNode(Node):
 
             response = self.wait_for_response()
             if response is not None:
-                found_fragments = response['found_fragments']
+                found_fragments = response['fragments']
                 fragment_hashes = [hash for hash in fragment_hashes if hash not in found_fragments]
                 self.download_queue.append(ip)
 
