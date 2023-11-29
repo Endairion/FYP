@@ -335,7 +335,7 @@ class RelayNode(Node):
         if self.blockchain is None or len(self.blockchain.chain) == 0:
             # If the blockchain is empty or doesn't exist, create a new blockchain and a genesis block
             self.blockchain = Blockchain()
-            genesis_block = Blockchain.createGenesisBlock()
+            genesis_block = self.blockchain.createGenesisBlock()
             self.blockchain.addBlock(genesis_block)
 
         # Convert the metadata to a dictionary
