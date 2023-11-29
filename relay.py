@@ -1,5 +1,6 @@
 import hashlib
 import json
+import pickle
 import threading
 import base64
 import time
@@ -369,9 +370,12 @@ class RelayNode(Node):
             self.send_blockchain(ip)
 
     def send_blockchain(self, ip):
-        # Read the blockchain data
+        # Load the blockchain from the file
         with open('blockchain.pkl', 'rb') as file:
-            blockchain_data = file.read()
+            blockchain = pickle.load(file)
+
+        # Serialize the entire blockchain
+        blockchain_data = pickle.dumps(blockchain)
 
         # Split the blockchain data into chunks
         chunk_size = 512  # Set chunk size to 512 bytes
