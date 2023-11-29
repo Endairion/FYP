@@ -19,7 +19,12 @@ if __name__ == "__main__":
             username = input("Enter your username: ")
             password = input("Enter your password: ")
 
-            node.login(username, password)
+            response = node.login(username, password)
+            if response["success"]:
+                # Login successful
+                node.logged_in = True
+                break
+
         elif choice == '2':
             # Prompt user to register a new account
             username = input("Enter a new username: ")
