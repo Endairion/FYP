@@ -24,10 +24,5 @@ class Block:
             data_string + str(self.timestamp) + str(self.lastHash) + str(self.nonce)
         )
 
-    def __str__(self):
-        data_string = str(self.data)  # treat self.data as an object, not a list
-        return (
-            f"Block {self.index}:\n"
-            f"Timestamp: {self.timestamp}\n"
-            f"Data:\n{data_string}\n"
-        )
+def __str__(self):
+        return f'Block(index={self.index}, timestamp={self.timestamp}, data={self.data}, lastHash={self.lastHash}, nonce={self.nonce}, hash={self.hash})'
