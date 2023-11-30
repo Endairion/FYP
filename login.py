@@ -355,6 +355,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Load the blockchain from 'blockchain.pkl'
         blockchain = Blockchain.load_from_file('blockchain.pkl')
 
+        if blockchain is None or len(blockchain.chain) == 0:
+            return None
         # Extract the blocks from the blockchain
         blocks = blockchain.extract_file_info()
 
